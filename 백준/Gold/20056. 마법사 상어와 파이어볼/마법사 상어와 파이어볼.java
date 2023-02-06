@@ -24,8 +24,8 @@ public class Main {
         for(int i=1;i<=m;i++)
         {
             st = new StringTokenizer(br.readLine(), " ");
-            int x = Integer.parseInt(st.nextToken())-1;
-            int y = Integer.parseInt(st.nextToken())-1;
+            int x = Integer.parseInt(st.nextToken());
+            int y = Integer.parseInt(st.nextToken());
             int m = Integer.parseInt(st.nextToken());
             int s = Integer.parseInt(st.nextToken());
             int d = Integer.parseInt(st.nextToken());
@@ -37,20 +37,21 @@ public class Main {
         for(int i=1;i<=k;i++)
         {
             move();
-            result = div();
+            result =  div();
         }
         System.out.println(result);
     }
 
     static int over(int x)
     {
-        int nx = x;
-        if(nx>0)
-            nx %=n;
-        if(nx<0)
-            nx = n - Math.abs(nx);
-
-        return nx;
+        if(x>n)
+            return (x % n);
+        else if(x<1) {
+            int tmp = x%n;
+            return (n + tmp);
+        }
+        else
+            return x;
     }
     static boolean all(int x,int y)
     {
@@ -77,9 +78,9 @@ public class Main {
     {
         int result = 0;
 
-        for(int i=0;i<n;i++)
+        for(int i=1;i<=n;i++)
         {
-            for(int j=0;j<n;j++)
+            for(int j=1;j<=n;j++)
             {
                 if(cboard[i][j]==1) {
                     result += mboard[i][j];
@@ -131,8 +132,8 @@ public class Main {
         {
             ball cur = q.poll();
 
-            int nx = cur.x + (cur.s % n)* dx[cur.d];
-            int ny = cur.y + (cur.s % n) * dy[cur.d];
+            int nx = cur.x + (cur.s%n) * dx[cur.d];
+            int ny = cur.y + (cur.s%n) * dy[cur.d];
 
             nx = over(nx);
             ny = over(ny);
