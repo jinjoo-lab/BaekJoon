@@ -1,4 +1,3 @@
-
 import java.io.*;
 import java.util.*;
 
@@ -14,6 +13,7 @@ public class Main {
     static int result = 0;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringTokenizer st = new StringTokenizer(br.readLine(), " ");
          tc = Integer.parseInt(st.nextToken());
 
@@ -58,13 +58,14 @@ public class Main {
             }
 
             if(result==0)
-                System.out.println("IMPOSSIBLE");
+                bw.write("IMPOSSIBLE\n");
             else{
-                System.out.println(result);
+                bw.write(result+"\n");
             }
 
         }
-
+        bw.flush();
+        bw.close();
         br.close();
     }
 
