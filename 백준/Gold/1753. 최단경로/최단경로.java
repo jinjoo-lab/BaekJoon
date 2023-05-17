@@ -59,6 +59,9 @@ public class Main {
         {
             point cur = q.poll();
 
+            if(cur.cost > dis[cur.to])
+                continue;
+
             for(int i=0;i<list[cur.to].size();i++)
             {
                 point next = list[cur.to].get(i);
