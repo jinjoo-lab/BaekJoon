@@ -1,122 +1,129 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-	static int N;
-	static int weight[][];
-	static char Map[][];
 
-	public static class XY {
-		int y;
-		int x;
+    static int n = 0;
+    static int[] dx = {0, 0, -1, 1, 1, 1, -1, -1};
+    static int[] dy = {1, -1, 0, 0, 1, -1, -1, 1};
 
-		public XY(int y, int x) {
-			super();
-			this.y = y;
-			this.x = x;
-		}
+    static TreeSet<Integer> set = new TreeSet<>();
 
-	}
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        n = Integer.parseInt(st.nextToken());
 
-	static int dy[] = { 0, 0, 1, 1, 1, -1, -1, -1 };
-	static int dx[] = { -1, 1, 0, 1, -1, 0, 1, -1 };
+        char[][] board = new char[n + 1][n + 1];
+        int[][] numBoard = new int[n + 1][n + 1];
 
-	public static void main(String[] args) throws NumberFormatException, IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		N = Integer.parseInt(br.readLine());
-		StringTokenizer st;
+        int count = 0;
+        int sx = 0;
+        int sy = 0;
+        for (int i = 1; i <= n; i++) {
+            String line = br.readLine();
 
-		weight = new int[N][N];
-		Map = new char[N][N];
-		XY start = null;
-		int pCnt = 0;
-		
-		for (int i = 0; i < N; i++) {
-			Map[i] = br.readLine().toCharArray();
-			for (int j = 0; j < N; j++) {
-				if (Map[i][j] == 'K') {
-					pCnt++;
-					
-				}else if (Map[i][j] == 'P') {
-					start = new XY(i, j);
-				}
-				
-			}
-		}
-		
-		TreeSet<Integer> set = new TreeSet<Integer>();
+            for (int j = 1; j <= n; j++) {
+                board[i][j] = line.charAt(j - 1);
 
-		for (int i = 0; i < N; i++) {
-			st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < N; j++) {
-				weight[i][j] = Integer.parseInt(st.nextToken());
-				set.add(weight[i][j]);
-			}
-		}
+                if (board[i][j] == 'K')
+                    count = count + 1;
 
-		Iterator<Integer> iter = set.iterator();
-		int Look[] = new int[set.size()];
-		for (int i = 0; i < set.size(); i++) {
-			Look[i] = iter.next();
-		}
-		
-		int result = Integer.MAX_VALUE;
-		
-		int left = 0;
-		int right = 0;
-		
-		while(left<=right && right<set.size()) {
-			int checkCnt = 0;
+                else if (board[i][j] == 'P') {
+                    sx = i;
+                    sy = j;
+                }
+            }
+        }
 
-			Queue<XY> q =new LinkedList<>();
-			boolean check[][] = new boolean[N][N];
-			
-			if(weight[start.y][start.x]>=Look[left] &&weight[start.y][start.x]<=Look[right]) {
-				q.add(start);
-				check[start.y][start.x] = true;
-				
-			}
-			
-			while(!q.isEmpty()) {
-				XY tmp = q.poll();
-				
-				for(int d=0;d<8;d++) {
-					int ny = tmp.y + dy[d];
-					int nx = tmp.x + dx[d];
-					if(ny<0||nx<0||ny>=N||nx>=N)continue;
-					if(check[ny][nx])continue;
-					if(weight[ny][nx]<Look[left]||weight[ny][nx]>Look[right])continue;
-					
-					if(Map[ny][nx] == 'K') checkCnt++;
-					check[ny][nx] = true;
-					q.add(new XY(ny,nx));
-				}
-			}
-			if(checkCnt == pCnt) {
-				
-				result = Math.min(result, Look[right]-Look[left]);
-				left++;
-			}else {
-				right++;
-			}
-			
-			
-			
-			
-			
-		}
-		
-		
+        int max = 0;
 
-		System.out.println(result);
+        for (int i = 1; i <= n; i++) {
+            st = new StringTokenizer(br.readLine(), " ");
 
-	}
+            for (int j = 1; j <= n; j++) {
+                numBoard[i][j] = Integer.parseInt(st.nextToken());
+                set.add(numBoard[i][j]);
+            }
+        }
+
+        Iterator<Integer> iter = set.iterator();
+        int Look[] = new int[set.size()];
+        for (int i = 0; i < set.size(); i++) {
+            Look[i] = iter.next();
+        }
+
+
+        int t1 = 0;
+        int t2 = 0;
+        int re = 200000000;
+
+
+        while (t1 <= t2 && t2 < set.size()) {
+            boolean tmp = false;
+            if(numBoard[sx][sy] >= Look[t1] && numBoard[sx][sy]<= Look[t2]) {
+                tmp = bfs(sx, sy, t1, t2, board, numBoard, count, Look);
+            }
+            if (tmp) {
+                re = Math.min(re, Math.abs(Look[t1] - Look[t2]));
+                t1 = t1 + 1;
+            } else {
+                t2 = t2 + 1;
+            }
+        }
+
+        System.out.println(re);
+        br.close();
+    }
+
+    static boolean bfs(int sx, int sy, int min, int max, char[][] board, int[][] numBoard, int result, int[] Look) {
+        if (numBoard[sx][sy] < Look[min] || numBoard[sx][sy] > Look[max])
+            return false;
+
+        boolean[][] visit = new boolean[n + 1][n + 1];
+        Queue<point> q = new LinkedList<>();
+        q.add(new point(sx, sy));
+        visit[sx][sy] = true;
+
+        int count = 0;
+        while (!q.isEmpty()) {
+            point cur = q.poll();
+
+            for (int i = 0; i < 8; i++) {
+                int nx = cur.x + dx[i];
+                int ny = cur.y + dy[i];
+
+                if (nx < 1 || nx > n || ny < 1 || ny > n)
+                    continue;
+
+                if (visit[nx][ny])
+                    continue;
+
+
+                if (numBoard[nx][ny] >= Look[min] && numBoard[nx][ny] <= Look[max]) {
+                    if (board[nx][ny] == 'K')
+                        count = count + 1;
+
+                    visit[nx][ny] = true;
+                    q.add(new point(nx, ny));
+                }
+
+            }
+        }
+
+        if (result == count)
+            return true;
+
+        return false;
+    }
+}
+
+class point {
+    int x;
+    int y;
+
+    point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 }
