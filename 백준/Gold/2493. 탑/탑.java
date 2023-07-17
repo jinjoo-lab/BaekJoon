@@ -1,5 +1,5 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
     static int n = 0;
@@ -8,56 +8,49 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine(), " ");
         n = Integer.parseInt(st.nextToken());
-        StringBuilder sb = new StringBuilder();
-        int[] board = new int[n+1];
-        Stack<Data> stack = new Stack<>() ;
-
-        int idx = n;
+        int[] board = new int[n + 1];
 
         st = new StringTokenizer(br.readLine(), " ");
-        for(int i=1;i<=n;i++)
-        {
+        for (int i = 1; i <= n; i++) {
             board[i] = Integer.parseInt(st.nextToken());
         }
-
+        int[] result = new int[n+1];
+        Stack<Point> stack = new Stack<>();
         for(int i=1;i<=n;i++)
         {
-            boolean flag = false;
 
             while(!stack.isEmpty())
             {
-                Data cur = stack.pop();
+                Point cur = stack.pop();
 
-                if(cur.val >= board[i])
+                if(board[i] <= cur.h)
                 {
-                    sb.append(cur.idx+" ");
-                    flag = true;
+                    result[i] = cur.idx;
                     stack.push(cur);
                     break;
                 }
             }
 
-            if(!flag)
-            {
-                sb.append(0+" ");
-            }
-
-            stack.push(new Data(board[i],i));
+            stack.push(new Point(i,board[i]));
         }
-        sb.append("\n");
-        System.out.println(sb.toString());
-        br.close();
+        StringBuilder sb = new StringBuilder();
+
+        for(int i=1;i<=n;i++)
+        {
+           sb.append(result[i]+" ");
+        }
+
+        System.out.println(sb);
     }
-
 }
-class Data
+class Point
 {
-    int val;
     int idx;
+    int h;
 
-    Data(int val,int idx)
+    Point(int idx,int h)
     {
-        this.val = val;
         this.idx = idx;
+        this.h = h;
     }
 }
