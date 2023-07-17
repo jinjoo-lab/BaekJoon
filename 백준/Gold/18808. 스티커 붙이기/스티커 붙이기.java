@@ -43,11 +43,8 @@ public class Main {
         }
 
 
-        for(int i=1;i<=k;i++)
-        {
-            go(i);
-        }
-        System.out.println(count());
+        dfs(1);
+
 
         br.close();
     }
@@ -67,40 +64,46 @@ public class Main {
         return result;
     }
 
-    static void go(int cur)
+    static void dfs(int cur)
     {
+
+        if(cur > k) {
+            System.out.println(count());
+            return;
+        }
+
         Sticker tmp = sarr[cur];
 
         for(int a=0;a<4;a++)
         {
+            if(keep[cur])
+                break;
+
             if(a!=0)
             {
                 tmp = turn(tmp);
             }
 
-            for(int i = 1;i <= n; i++)
+            loop1 : for(int i = 1;i <= n; i++)
             {
                 for(int j=1 ; j<= m ;j++)
                 {
                     if(canPost(tmp,i,j))
                     {
                         post(tmp,i,j);
-                        return;
+                        keep[cur] = true;
+                        dfs(cur+1);
+                        break loop1;
                     }
                 }
             }
         }
-    }
 
-    static void print(int[][] board,int x,int y)
-    {
-        for(int i=1;i<=x;i++)
+        if(!keep[cur])
         {
-            for(int j=1;j<=y;j++)
-                System.out.print(board[i][j]+" ");
-            System.out.println();
+            dfs(cur+1);
         }
-        System.out.println();
+
     }
 
     static boolean canPost(Sticker cur,int x,int y)
@@ -146,21 +149,21 @@ public class Main {
 
     static Sticker turn(Sticker cur)
     {
-       Sticker tmp = new Sticker(cur.y,cur.x);
-       int sy = cur.x;
-       int sx = 1;
-       for(int i=1 ; i<= cur.x ; i++)
-       {
-           sx = 1;
-           for(int j= 1;j <= cur.y ; j++)
-           {
-               tmp.board[sx][sy]= cur.board[i][j];
-               sx = sx + 1;
-           }
-           sy = sy - 1;
-       }
+        Sticker tmp = new Sticker(cur.y,cur.x);
+        int sy = cur.x;
+        int sx = 1;
+        for(int i=1 ; i<= cur.x ; i++)
+        {
+            sx = 1;
+            for(int j= 1;j <= cur.y ; j++)
+            {
+                tmp.board[sx][sy]= cur.board[i][j];
+                sx = sx + 1;
+            }
+            sy = sy - 1;
+        }
 
-       return tmp;
+        return tmp;
     }
 
     static void print()
