@@ -10,6 +10,7 @@ public class Main {
     static int[] all;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringTokenizer st = new StringTokenizer(br.readLine(), " ");
 
         n = Integer.parseInt(st.nextToken());
@@ -58,26 +59,21 @@ public class Main {
             plus(plus);
         }
 
-        for(int i=2;i<=n;i++)
-        {
-            for(int j=2;j<=n;j++)
-            {
-                board[i][j] += all[j-1];
-            }
-        }
-
         StringBuilder sb = new StringBuilder();
-
         for(int i=1;i<=n;i++)
         {
             for(int j=1;j<=n;j++)
             {
+                if(i != 1 && j != 1)
+                     board[i][j] += all[j-1];
                 sb.append(board[i][j]+" ");
-            }sb.append("\n");
+            }
+            sb.append("\n");
         }
 
-        System.out.print(sb);
-
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
         br.close();
     }
 
