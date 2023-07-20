@@ -6,6 +6,8 @@ public class Main {
     static int m = 0;
 
     static int[][] board;
+
+    static int[] all;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine(), " ");
@@ -24,6 +26,7 @@ public class Main {
         }
 
         int[] plus = new int[2*n + 1];
+        all = new int[n];
 
         for(int i=1;i<=m;i++) {
             st = new StringTokenizer(br.readLine(), " ");
@@ -53,6 +56,14 @@ public class Main {
 
             inIt(plus);
             plus(plus);
+        }
+
+        for(int i=2;i<=n;i++)
+        {
+            for(int j=2;j<=n;j++)
+            {
+                board[i][j] += all[j-1];
+            }
         }
 
         StringBuilder sb = new StringBuilder();
@@ -91,18 +102,12 @@ public class Main {
         int[] second = new int[n];
 
         second[1] = Math.max(plus[n-1], Math.max(plus[n], plus[n+1]));
+        all[1] += second[1];
 
         for(int i=2;i<n;i++)
         {
             second[i] = Math.max(second[i-1],plus[n+i]);
-        }
-
-        for(int i=2;i<=n;i++)
-        {
-            for(int j=2;j<=n;j++)
-            {
-                board[i][j] += second[j-1];
-            }
+            all[i] += second[i];
         }
     }
 }
