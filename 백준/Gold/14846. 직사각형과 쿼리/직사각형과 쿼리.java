@@ -23,18 +23,7 @@ public class Main {
 
                 for(int k=1;k<=10;k++)
                 {
-                    dp[i][j][k] += dp[i][j-1][k];
-                }
-            }
-        }
-
-        for(int i=1;i<=n;i++)
-        {
-            for(int j=1;j<=n;j++)
-            {
-                for(int k=1;k<=10;k++)
-                {
-                    dp[i][j][k] +=dp[i-1][j][k];
+                    dp[i][j][k] += dp[i][j-1][k] + dp[i-1][j][k] - dp[i-1][j-1][k];
                 }
             }
         }
