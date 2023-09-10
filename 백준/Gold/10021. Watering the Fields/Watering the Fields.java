@@ -55,13 +55,7 @@ public class Main {
             }
         }
 
-        int count = 0;
-        for(int i=1;i<=n;i++){
-            if(root[i] == i)
-                count = count + 1;
-        }
-
-        if(count >=2)
+        if(num != n-1)
             System.out.println(-1);
         else
             System.out.println(result);
