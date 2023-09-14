@@ -3,16 +3,16 @@ import java.io.*;
 
 public class Main {
     static char[][] board;
-    static boolean[][] visit;
 
     static int[] dx = {0,0,-1,1,1,1,-1,-1,0};
     static int[] dy = {1,-1,0,0,1,-1,1,-1,0};
+
+    static Queue<Node> q = new LinkedList<>();
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         board = new char[9][9];
-        visit = new boolean[9][9];
 
         for(int i=1;i<=8;i++){
             String line = br.readLine();
@@ -22,11 +22,10 @@ public class Main {
             }
         }
 
-        Queue<Node> q = new LinkedList<>();
         q.add(new Node(8,1));
 
         while(true){
-            boolean tmp = search(q);
+            boolean tmp = search();
 
             if(tmp){
                 System.out.println(1);
@@ -40,12 +39,12 @@ public class Main {
             }
 
             move();
-            
+
         }
         br.close();
     }
 
-    static boolean search(Queue<Node> q){
+    static boolean search(){
 
         int size = q.size();
 
