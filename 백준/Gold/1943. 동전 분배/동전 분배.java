@@ -2,59 +2,60 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int n = 0;
+    private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    private static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String line;
-        StringBuilder sb = new StringBuilder();
-        while((line = br.readLine()) != null){
-            n = Integer.parseInt(line);
+        String line = null;
+        while((line = br.readLine())!= null){
+            dp(line);
+        }
+        bw.flush();
+        bw.close();
+    }
 
-            int sum = 0;
-            int[][] board = new int[n+1][2];
-            for(int i=1;i<=n;i++){
-                StringTokenizer st = new StringTokenizer(br.readLine()," ");
-                board[i][0] = Integer.parseInt(st.nextToken());
-                board[i][1] = Integer.parseInt(st.nextToken());
+    private static void dp(String line) throws IOException {
+        int N = Integer.parseInt(line);
+        Queue<Node> pq = new LinkedList<>();
+        int sum = 0;
+        for (int i = 0 ; i < N ; i++) {
+            int[] input = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+            pq.add(new Node(input[0],input[1]));
+            sum += input[0] * input[1];
+        }
+        if (sum % 2 != 0) {
+            bw.write(0+"\n");
+            return;
+        }
+        boolean[] dp = new boolean[sum/2+1];
+        dp[0] = true;
 
-                sum += (board[i][0] * board[i][1]);
-            }
-
-            int[] dp = new int[50001];
-            dp[0] = 1;
-
-            if(sum%2 == 1){
-                sb.append(0+"\n");
-                continue;
-            }
-
-            for(int i=1;i<=n;i++){
-                for(int j=sum/2;j>=board[i][0];j--){
-                    if(j - board[i][0] >= 0){
-                        if(dp[j - board[i][0]] == 1){
-                            int idx = 1;
-
-                            for(int k=0;k<=board[i][1];k++){
-                                if(j + k*board[i][0] <= sum/2){
-                                    dp[j+ k*board[i][0]] = 1;
-                                }
+        while (!pq.isEmpty()) {
+            Node cur = pq.poll();
+            for (int i = sum/2 ; i >= cur.v ; i--) {
+                if (i == cur.v || dp[i-cur.v]) {
+                    for(int k=0;k<=cur.c;k++){
+                        if(i + (k*cur.v) <= sum/2){
+                            dp[i + (k*cur.v)] = true;
+                            if ((i + (k*cur.v)) == sum/2) {
+                                bw.write(1+"\n");
+                                return;
                             }
                         }
-
                     }
                 }
             }
-
-            if(dp[sum/2] == 1){
-                sb.append(1+"\n");
-            }
-            else{
-                sb.append(0+"\n");
-            }
         }
 
-        System.out.print(sb);
-        br.close();
+        bw.write(0+"\n");
+    }
+}
+class Node{
+    int v;
+    int c;
+
+    Node(int v,int c){
+        this.v = v;
+        this.c = c;
     }
 }
