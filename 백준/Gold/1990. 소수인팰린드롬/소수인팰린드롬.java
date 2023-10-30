@@ -29,7 +29,7 @@ public class Main {
         }
 
         for(int i=n;i<=m;i++){
-            if(!isPrime[i] && palindrome(i+"")){
+            if(!isPrime[i] && palindrome(String.valueOf(i))){
                 sb.append(i+"\n");
             }
         }
@@ -55,3 +55,4 @@ public class Main {
     }
 
 }
+
