@@ -7,6 +7,8 @@ public class Main {
 
     static int[] root;
 
+    static HashSet<Integer> set;
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine(), " ");
@@ -29,10 +31,8 @@ public class Main {
                 int z = Integer.parseInt(st.nextToken());
 
                 arr[i] = new Node(x,y,z);
-            }
 
-            for(int i=1;i<=n;i++){
-                for(int j=1;j<=n;j++){
+                for(int j=1;j<=i-1;j++){
                     if(i == j)
                         continue;
 
@@ -42,11 +42,9 @@ public class Main {
                 }
             }
 
-            for(int i=1;i<=n;i++){union(i,root[i]);}
-
-            HashSet<Integer> set = new HashSet<>();
+            set = new HashSet<>();
             for(int i=1;i<=n;i++){
-               set.add(root[i]);
+               set.add(find(root[i]));
             }
 
             sb.append(set.size()+"\n");
@@ -57,12 +55,14 @@ public class Main {
     }
 
     static boolean can(Node a, Node b){
-        double disX = Math.pow((a.x - b.x), 2);
-        double disY = Math.pow((a.y - b.y), 2);
+        double disX = (a.x - b.x);
+        double disY = (a.y - b.y);
 
-        double dis = Math.sqrt(disX+ disY);
+        double dis = (disX * disX) + (disY * disY);
 
-        if(dis <= (double)(a.r + b.r))
+        double rD = (a.r + b.r) * (a.r + b.r);
+
+        if(dis <= rD)
             return true;
 
         return false;
