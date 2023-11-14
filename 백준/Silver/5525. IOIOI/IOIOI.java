@@ -12,39 +12,26 @@ public class Main {
         m = Integer.parseInt(br.readLine());
 
         char[] arr = br.readLine().toCharArray();
-        char[] s = new char[2*n+1];
 
-        for(int i=0;i<2*n+1;i++){
-            if(i % 2 == 0){
-                s[i] = 'I';
-            }else{
-                s[i] = 'O';
-            }
-        }
-
+        int result = 0;
         int count = 0;
 
-        for(int i=0;i<m;i++){
-            if(arr[i] == 'I'){
-                int len = i + 2*n;
+        for(int i=1;i<m-1;i++){
+            if(arr[i-1] == 'I' && arr[i] =='O' && arr[i+1] =='I'){
+                count += 1;
 
-                if(len < m){
-                    boolean find = true;
-
-                    for(int j = i;j<=len;j++){
-                        if(arr[j] != s[j - i]){
-                            find = false;
-                            break;
-                        }
-                    }
-
-                    if(find){count += 1;}
+                if(count == n){
+                    count -= 1;
+                    result += 1;
                 }
-            }
 
+                i ++;
+            }else{
+                count = 0;
+            }
         }
 
-        System.out.println(count);
+        System.out.println(result);
         br.close();
     }
 
