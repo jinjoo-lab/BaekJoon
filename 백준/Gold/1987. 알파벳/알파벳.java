@@ -1,79 +1,55 @@
-import java.io.*;
-import java.util.*;
-/*
- * 백준 1987 알파벳
- * 세로 R , 가로 C
- * 말은 상하좌우 이동 -> bfs 생각 열어두기
- * 새로 이동한 칸의 알파벳은 중복 불가
- * 좌측 상단 (1,1) -> 출발점이 주어진다
- * 말이 최대 몇칸 지날 수 있나? , 출발점 포함 , visit[1][1] = 1
- */
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
 public class Main {
-    static int n = 0;
-    static int m = 0;
-    static int result =-1;
-    static int[] dx ={0,0,-1,1};
-    static int[] dy ={1,-1,0,0};
-    static char[][] board = new char[21][21];
-    static boolean[][] visit =new boolean[21][21];
-    static boolean[] isIn = new boolean[27];
+
+    static int R, C;
+    static int[][] map;
+    static boolean[] visit = new boolean[26];
+    static int[] dx = {-1, 1, 0, 0};
+    static int[] dy = {0, 0, -1, 1};
+    static int ans = 1;
+
+    public static void dfs(int x, int y, int count) {
+
+        ans = Math.max(ans,count);
+
+        for (int i = 0; i < 4; i++) {
+            int cx = x + dx[i];
+            int cy = y + dy[i];
+
+            if (cx >= 0 && cy >= 0 && cx < R && cy < C) {
+                if (!visit[map[cx][cy]]) {
+                    visit[map[cx][cy]] = true;
+                    dfs(cx, cy, count + 1);
+                    visit[map[cx][cy]] = false;
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) throws IOException {
+
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String[] line = br.readLine().split(" ");
-        n = Integer.parseInt(line[0]);
-        m = Integer.parseInt(line[1]);
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        for(int i=1;i<=n;i++)
-        {
-            line = br.readLine().split("");
-            for(int j=1;j<=m;j++)
-            {
-                board[i][j] = line[j-1].charAt(0);
+        R = Integer.parseInt(st.nextToken());
+        C = Integer.parseInt(st.nextToken());
+        map = new int[R][C];
+        for (int i = 0; i < R; i++) {
+            String str = br.readLine();
+            for (int j = 0; j < C; j++) {
+                map[i][j] = str.charAt(j) - 'A';
             }
         }
-        visit[1][1] = true;
-        isIn[board[1][1]-'A'] = true;
-        travel(new point(1,1),1);
-        System.out.println(result);
-        br.close();
-    }
 
-    static void travel(point cur,int count)
-    {
-        for(int i=0;i<4;i++)
-        {
-            int nx = cur.x+dx[i];
-            int ny = cur.y+dy[i];
+        visit[map[0][0]] = true;
+        dfs(0, 0, 1);
+        // (0,0)부터 시작하며, 현재 이동한 위치는 0회
 
-            if(nx>=1&&nx<=n&&ny>=1&&ny<=m)
-            {
-                if(visit[nx][ny]==false&&!isIn[board[nx][ny]-'A'])
-                {
-                    visit[nx][ny]=true;
-                    isIn[board[nx][ny]-'A'] = true;
-                    travel(new point(nx,ny),count+1);
-                    visit[nx][ny]=false;
-                    isIn[board[nx][ny]-'A'] = false;
-                }
-
-                else{
-                    if(result<count)
-                    {
-                        result = count;
-                    }
-                }
-            }
-        }
+        System.out.println(ans);
     }
 }
-class point
-{
-    int x;
-    int y;
 
-    point(int x,int y)
-    {
-        this.x = x;
-        this.y = y;
-    }
-}
