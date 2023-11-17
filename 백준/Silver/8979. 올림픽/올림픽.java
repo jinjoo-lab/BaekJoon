@@ -50,7 +50,7 @@ public class Main {
         for(int i = 1; i < n ;i ++){
             Country cur = arr[i];
 
-            if(arr[i-1].g != arr[i].g || arr[i-1].s != arr[i].s || arr[i-1].b != arr[i-1].b){
+            if(arr[i-1].g != arr[i].g || arr[i-1].s != arr[i].s || arr[i-1].b != arr[i].b){
                 num += count;
                 count = 1;
             }else{
