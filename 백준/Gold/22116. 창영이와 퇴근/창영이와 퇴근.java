@@ -54,7 +54,7 @@ public class Main {
             Node cur = pq.poll();
 
             if(cur.x == n && cur.y == n){
-                continue;
+                break;
             }
 
             for(int i=0;i<4;i++){
