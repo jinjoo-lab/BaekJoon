@@ -5,8 +5,8 @@ int dp[1002][1002][3];
 int n, m;
 int arr[1002][1002];
 bool check[1002][1002];
-int dx[] = { 1,0,0 };
-int dy[] = { 0,-1,1 };
+int dx[] = { 0,1,0 };
+int dy[] = { -1,0,1 };
 
 void init() {
 	for (int i = 0; i < 1002; i++) {
