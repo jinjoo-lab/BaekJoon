@@ -1,52 +1,46 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Main {
-    static int t = 0;
-    static int n = 0;
-
-    static int[] prime = {1,3,7,9};
-
-    static StringBuilder sb;
-
+    /*
+     * 시간 : 856 ms
+     *
+     * 공간 : 14196 KB
+     * */
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-        n = Integer.parseInt(st.nextToken());
-        sb = new StringBuilder();
-
-        travel(2,1);
-        travel(3,1);
-        travel(5,1);
-        travel(7,1);
-
-        System.out.print(sb);
-        br.close();
+        int n = Integer.parseInt(new BufferedReader(new InputStreamReader(System.in)).readLine());
+        int num = 0;
+        int[] prefix = {2, 3, 5, 7};
+        for (int i : prefix) {
+            num = i;
+            go(1, n, num);
+        }
     }
 
-    static void travel(int cur,int num){
-        if(num == n){
-            sb.append(cur+"\n");
+    private static void go(int depth, int n, int num) {
+        int[] arr = {1, 3, 5, 7, 9};
+        if (!isPrime(num)) {
             return;
         }
+        if (depth == n) {
+            System.out.println(num);
+        }
+        for (int i = 0; i < 5; i++) {
+            int next = num*10 + arr[i];
+            go(depth + 1, n, next);
+        }
 
-        for(int i=0;i<4;i++){
-            int tmp = cur * 10 + prime[i];
+    }
 
-            if(isPrime(tmp)){
-                travel(tmp,num + 1);
+    // 에라토스테네스의 체
+    private static boolean isPrime(int x) {
+        int end = (int)Math.sqrt(x);
+        for (int i = 2; i <= end; i++) {
+            if (x % i == 0) {
+                return false;
             }
         }
-    }
-
-    static boolean isPrime(int num){
-        for(int i=2;i<=Math.sqrt(num);i++){
-            if(num % i == 0)
-                return false;
-        }
-
         return true;
     }
-
 }
-
