@@ -51,17 +51,17 @@ public class Main {
 
     static void search() {
 
-        int[][] dp = new int[n + 1][2501];
+        long [][] dp = new long [n + 1][2501];
 
         PriorityQueue<Point> pq = new PriorityQueue<>(
-                (x, y) -> x.tc - y.tc
+                (x, y) -> Long.compare(x.tc,y.tc)
         );
 
         pq.add(new Point(1, 0, price[1]));
 
         for (int i = 1; i <= n; i++) {
             for(int j= 0 ;j <=2500 ; j++){
-                dp[i][j] = Integer.MAX_VALUE;
+                dp[i][j] = Long.MAX_VALUE;
             }
         }
 
@@ -75,8 +75,10 @@ public class Main {
                 return;
             }
 
-            if(dp[cur.v][cur.mc] < cur.tc)
-                continue;
+            if(dp[cur.v][cur.mc] > cur.tc){
+                dp[cur.v][cur.mc] = cur.tc;
+            }
+
 
             int minOil = Math.min(cur.mc,price[cur.v]);
 
@@ -94,10 +96,10 @@ public class Main {
 }
 class Point{
     int v;
-    int tc;
+    long tc;
     int mc;
 
-    Point(int v,int tc,int mc){
+    Point(int v,long tc,int mc){
         this.v = v;
         this.tc = tc;
         this.mc = mc;
