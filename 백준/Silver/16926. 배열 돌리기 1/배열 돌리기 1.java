@@ -1,5 +1,3 @@
-
-
 import java.io.*;
 import java.util.*;
 
@@ -31,8 +29,17 @@ public class Main {
             }
         }
 
-        for(int i=1;i<=k;i++) {
-            turn();
+        int row = n;
+        int cal = m;
+
+        for(int t=1;t <= Math.min(n,m)/ 2;t++) {
+
+            int len = k % (((row + cal) * 2) - 4);
+
+            turn(t,len);
+
+            row = row -2;
+            cal = cal -2;
         }
 
         for(int i=1;i<=n;i++){
@@ -45,11 +52,9 @@ public class Main {
         br.close();
     }
 
-    static void turn(){
+    static void turn(int t,int len){
 
-        int min = Math.min(n,m);
-
-        for(int t = 1; t <= min / 2 ; t++){
+        for(int i=1;i<=len;i++){
 
             int sx = t;
             int sy = t;
@@ -70,15 +75,8 @@ public class Main {
                     idx++;
                 }
             }
-
             board[t+1][t] = tmp;
         }
 
-       // print();
-
     }
-
 }
-
-
-
