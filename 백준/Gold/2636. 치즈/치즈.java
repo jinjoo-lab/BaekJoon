@@ -1,95 +1,98 @@
-import java.util.*;
-import java.io.*;
-import java.awt.Point;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
 public class Main {
-    static int num=0;
     static int n = 0;
     static int m = 0;
-    static int[][] board = new int[101][101];
-    static int[][] visit =  new int[101][101];
+
+    static int[][] board;
     static int[] dx = {0,0,-1,1};
     static int[] dy = {1,-1,0,0};
-    static Queue<pair> q = new LinkedList<>();
+
+    static Queue<int[]> q = new LinkedList<>();
+
+    static Queue<int[]> tmp = new LinkedList<>();
+
+    static boolean[][] v;
+
+    static int count = 0;
+
     public static void main(String[] args) throws Exception {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(bf.readLine()," ");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        StringBuilder sb = new StringBuilder();
+
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
 
-        for(int i= 1;i<=n;i++)
-        {
-            st = new StringTokenizer(bf.readLine()," ");
-            for(int j=1;j<=m;j++)
-            {
+        v = new boolean[n+1][m+1];
+        board = new int[n+1][m+1];
+
+        for(int i = 1 ; i <= n ; i++){
+            st = new StringTokenizer(br.readLine(), " ");
+
+            for(int j = 1 ; j <= m ; j++){
                 board[i][j] = Integer.parseInt(st.nextToken());
-                if(board[i][j]==1)
-                    num=num+1;
 
-                if(i==1||i==n||j==1||j==m)
-                    q.add(new pair(i,j));
+                if(board[i][j] == 1){
+                    count++;
+                }
             }
         }
-        int hour=0;
-        while(true)
-        {
-            if(num==0)
-                break;
 
-            int result =  bfs();
-            hour=hour+1;
+        q.add(new int[]{1,1});
+        int sec = 0;
+        int tmp = 0;
+        while(count > 0){
+            tmp = bfs();
+            sec += 1;
 
-            if(num-result==0)
-            {
-                break;
-            }
-            num = num -result;
+            count -= tmp;
         }
-        System.out.println(hour);
-        System.out.println(num);
 
-        bf.close();
+        System.out.println(sec);
+        System.out.println(tmp);
+        br.close();
     }
 
-    static int bfs() {
-        int result = 0;
-       Queue<pair> sub =new LinkedList<>();
-       while(!q.isEmpty())
-       {
-           pair cur = q.poll();
-           for(int i=0;i<4;i++)
-           {
-               int nx = cur.x+ dx[i];
-               int ny = cur.y + dy[i];
+    static int bfs(){
 
-               if(nx>=1&&nx<=n&&ny>=1&&ny<=m)
-               {
-                   if(visit[nx][ny]==0&&board[nx][ny]==0)
-                   {
-                       visit[nx][ny]=1;
-                       q.add(new pair(nx,ny));
-                   }
-                   else if(visit[nx][ny]==0&&board[nx][ny]==1)
-                   {
-                       visit[nx][ny]=1;
-                       board[nx][ny]=0;
-                       result = result +1;
-                       sub.add(new pair(nx,ny));
-                   }
-               }
-           }
-       }
-       q = new LinkedList<>(sub);
-       return result;
-    }
+        int tmpCount = 0;
 
-}
-class pair
-{
-    int x;
-    int y;
-    pair(int x, int y)
-    {
-        this.x =x;
-        this.y = y;
+        tmp.clear();
+
+        while(!q.isEmpty()){
+            int[] cur = q.poll();
+
+            for(int i = 0 ; i < 4 ; i++){
+                int nx = cur[0] + dx[i];
+                int ny = cur[1] + dy[i];
+
+                if(nx < 1 || nx > n || ny < 1 || ny > m)
+                    continue;
+
+                if(v[nx][ny])
+                    continue;
+
+                v[nx][ny] = true;
+
+                if(board[nx][ny] == 1){
+                    tmp.add(new int[]{nx,ny});
+                    tmpCount += 1;
+                }else{
+                    q.add(new int[]{nx,ny});
+                }
+            }
+        }
+
+        while(!tmp.isEmpty()){
+            q.add(tmp.poll());
+        }
+
+        return tmpCount;
     }
 }
+
