@@ -1,4 +1,3 @@
-
 import java.io.*;
 import java.util.*;
 
@@ -10,7 +9,7 @@ public class Main {
 
     static int[] board;
 
-    static HashMap<Integer,Integer> set = new HashMap<>();
+    static int[] count = new int[3001];
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -30,41 +29,38 @@ public class Main {
         int l = 1;
         int r = k;
         int max = 0;
+        int num = 0;
 
         for(int i = 1 ; i <= k ;i++){
-            put(board[i]);
-            max = Math.max(max , set.containsKey(c) ? set.size() : set.size() + 1);
+            if(count[board[i]] == 0){
+                num++;
+            }
+            count[board[i]] += 1;
+            max = Math.max(max , count[c] >= 1 ? num : num + 1);
         }
 
         while( l <= n){
-            remove(board[l]);
-            l += 1;
-            int nextR = nextR(r);
-            put(board[nextR]);
+            if(count[board[l]] == 1){
+                num--;
+            }
+            count[board[l]] -= 1;
 
-            max = Math.max(max , set.containsKey(c) ? set.size() : set.size() + 1);
+            int nextR = nextR(r);
+            if(count[board[nextR]] == 0){
+                num++;
+            }
+            count[board[nextR]] += 1;
+
+            l += 1;
             r = nextR;
+
+            max = Math.max(max , count[c] >= 1 ? num : num + 1);
         }
 
         System.out.println(max);
         br.close();
     }
 
-    static void put(int data){
-        if(set.containsKey(data)){
-            set.put(data,set.get(data) + 1);
-        }else{
-            set.put(data,1);
-        }
-    }
-
-    static void remove(int data){
-        if(set.get(data) == 1){
-            set.remove(data);
-        }else{
-            set.put(data,set.get(data) -1);
-        }
-    }
 
     static int nextR(int r){
         if(r >= n)
