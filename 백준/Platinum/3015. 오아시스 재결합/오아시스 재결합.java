@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.util.*;
 
@@ -28,13 +29,11 @@ public class Main {
         Stack<Integer> stack = new Stack<>();
 
         for(int i=1;i<=n;i++){
-
-            int tmpCount = 0;
+            
 
             while(!stack.isEmpty()){
                 if(board[stack.peek()] < board[i]){
                     count += duplicated[stack.peek()] + 1;
-                    tmpCount += duplicated[stack.peek()] + 1;
                     stack.pop();
                 }else if(board[stack.peek()] == board[i]){
                     duplicated[i] += duplicated[stack.peek()] + 1;
