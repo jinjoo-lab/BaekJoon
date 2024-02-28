@@ -1,119 +1,100 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+
+import java.io.*;
 import java.util.*;
 
 public class Main {
     static int n = 0;
+    static int [][] board;
 
-    static int[][] board;
-    static long[][][] dp;
+    static int[] dx = {-1,-1,0};
+    static int[] dy = {0,-1,-1};
+    static long [][][] dp;
 
-    static int[] dx = {0, -1, -1};
-    static int[] dy = {-1, 0, -1};
-
-    public static void main(String[] args) throws Exception {
-        StringBuilder sb = new StringBuilder();
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+
         n = Integer.parseInt(st.nextToken());
 
-        board = new int[n + 1][n + 1];
+        board = new int[n+1][n+1];
 
-        for (int i = 1; i <= n; i++) {
-            st = new StringTokenizer(br.readLine());
-
-            for (int j = 1; j <= n; j++) {
+        for(int i = 1 ; i <= n ; i++){
+            st = new StringTokenizer(br.readLine(), " ");
+            for(int j = 1 ; j <= n ; j++){
                 board[i][j] = Integer.parseInt(st.nextToken());
             }
         }
 
-        dp = new long[n + 1][n + 1][3];
-        dp[1][2][0] = 1;
+        dp = new long[n+1][n+1][3];
 
+        // U C L
 
+        for(int i = 2 ; i <= n ; i++){
 
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= n; j++) {
-                garo(i,j);
-                sero(i,j);
-                crossGo(i,j);
+            if(board[1][i] == 1)
+                break;
 
+            dp[1][i][2] = 1;
+        }
+
+        for(int i = 2 ; i <= n ; i++){
+            for(int j = 3 ; j <= n ; j++){
+
+                if(board[i][j] == 1)
+                    continue;
+
+                if(board[i-1][j] != 1){
+                    dp[i][j][0] += dp[i-1][j][0];
+                    dp[i][j][0] += dp[i-1][j][1];
+                }
+
+                if(board[i][j-1] != 1){
+                    dp[i][j][2] += dp[i][j-1][2];
+                    dp[i][j][2] += dp[i][j-1][1];
+                }
+
+                boolean isPossible = true;
+                for(int k = 0; k < 3 ; k++){
+
+                    int nx = i + dx[k];
+                    int ny = j + dy[k];
+
+                    if(nx < 1 || nx > n || ny < 1 || ny > n){
+                        isPossible = false;
+                        break;
+                    }
+
+                    if(board[nx][ny] == 1){
+                        isPossible = false;
+                        break;
+                    }
+                }
+
+                if(isPossible){
+                    dp[i][j][1] += dp[i-1][j-1][0];
+                    dp[i][j][1] += dp[i-1][j-1][2];
+                    dp[i][j][1] += dp[i-1][j-1][1];
+                }
             }
         }
 
-        System.out.println(dp[n][n][0] + dp[n][n][1] + dp[n][n][2]);
+        long result = 0;
+        result += dp[n][n][0];
+        result += dp[n][n][1];
+        result += dp[n][n][2];
+
+        System.out.println(result);
+
         br.close();
     }
 
-
-    static boolean cross(int x, int y) {
-
-        if(board[x][y] == 1)
-            return false;
-
-        for (int i = 0; i < 3; i++) {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
-
-            if (nx < 1 || nx > n || ny < 1 || ny > n)
-                return false;
-
-            if (board[nx][ny] == 1)
-                return false;
+    static void print(){
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=n;j++){
+                System.out.print(dp[i][j][0]+" "+dp[i][j][1]+" "+dp[i][j][2]+" , ");
+            }
+            System.out.println();
         }
-
-
-        return true;
-    }
-
-    static void garo(int i,int j){
-        int nx = i + dx[0];
-        int ny = j + dy[0];
-
-        if (nx < 1 || nx > n || ny < 1 || ny > n)
-            return;
-
-        if (board[nx][ny] == 0 && board[i][j] == 0) {
-            dp[i][j][0] += dp[nx][ny][0];
-        }
-
-
-        if (cross(i, j)) {
-            dp[i][j][2] += dp[i+dx[2]][j+dy[2]][0];
-        }
-    }
-
-    static void sero(int i,int j){
-        int nx = i + dx[1];
-        int ny = j + dy[1];
-
-        if (nx < 1 || nx > n || ny < 1 || ny > n)
-            return;
-
-        if (board[nx][ny] == 0 && board[i][j] == 0)
-            dp[i][j][1] += dp[nx][ny][1];
-
-
-        if (cross(i, j)) {
-            dp[i][j][2] += dp[i+dx[2]][j+dy[2]][1];
-        }
-    }
-
-    static void crossGo(int i,int j){
-        for (int k = 0; k <= 1; k++) {
-            int nx = i + dx[k];
-            int ny = j + dy[k];
-
-            if (nx < 1 || nx > n || ny < 1 || ny > n)
-                continue;
-
-            if (board[nx][ny] == 0 && board[i][j] == 0)
-                dp[i][j][k] += dp[nx][ny][2];
-        }
-
-        if (cross(i, j)) {
-            dp[i][j][2] += dp[i+dx[2]][j+dy[2]][2];
-        }
+        System.out.println();
     }
 }
-
