@@ -1,115 +1,79 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int k = 0;
+    static int t = 0;
     static int n = 0;
 
-    static int sx = 0;
-    static int sy = 0;
-    static int lx = 0;
-    static int ly = 0;
+    static int[][] dis;
+
+    static boolean[][] dp;
+
+    static int[][] board;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
         StringBuilder sb = new StringBuilder();
-        k = Integer.parseInt(br.readLine());
-        for(int a = 1;a<=k;a++) {
 
-            n = Integer.parseInt(br.readLine());
+        t = Integer.parseInt(st.nextToken());
 
-            ArrayList<point> arr = new ArrayList<>();
+        for(int a = 1; a <= t ; a++) {
+            st = new StringTokenizer(br.readLine()," ");
+            n = Integer.parseInt(st.nextToken());
 
+            n = n + 2;
 
-            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-            sx = Integer.parseInt(st.nextToken());
-            sy = Integer.parseInt(st.nextToken());
+            board = new int[n+1][3];
 
-            arr.add(new point(sx,sy));
+            for(int i = 1 ; i <= n ; i++){
+                st = new StringTokenizer(br.readLine()," ");
 
-            for(int i=1;i<=n;i++)
-            {
-                st = new StringTokenizer(br.readLine(), " ");
                 int x = Integer.parseInt(st.nextToken());
                 int y = Integer.parseInt(st.nextToken());
 
-                arr.add(new point(x,y));
+                board[i][0] = x;
+                board[i][1] = y;
             }
 
-            st = new StringTokenizer(br.readLine(), " ");
-            lx = Integer.parseInt(st.nextToken());
-            ly = Integer.parseInt(st.nextToken());
+            dp = new boolean[n+1][n+1];
 
-            arr.add(new point(lx,ly));
+            for(int i = 1 ; i <= n ; i++){
+                for(int j = 1 ; j <= n ; j++){
 
-            ArrayList<Integer>[] board = new ArrayList[n+3];
+                    if(i == j)
+                        continue;
 
-            for(int i=0;i<=n+2;i++)
-            {
-                board[i] = new ArrayList<>();
+                    dp[i][j] = getDis(board[i][0],board[i][1],board[j][0],board[j][1]);
+                }
             }
 
-            for(int i=0;i<n+1;i++)
-            {
-                for(int j=i+1;j<=n+1;j++)
-                {
-                    if(dis(arr.get(i) , arr.get(j)) <= 1000)
-                    {
-                        board[i].add(j);
-                        board[j].add(i);
+
+            for(int k = 1; k <= n ; k++){
+                for(int i = 1 ; i <= n ; i++){
+                    for(int j = 1 ; j <= n ; j++){
+                        dp[i][j] = dp[i][j] || (dp[i][k] && dp[k][j]);
                     }
                 }
             }
 
-            sb.append(bfs(board)+"\n");
+            if(dp[1][n]){
+                sb.append("happy\n");
+            }else{
+                sb.append("sad\n");
+            }
+
         }
+
         System.out.print(sb);
         br.close();
     }
-    static String bfs(ArrayList<Integer>[] board)
-    {
-        boolean[] visit = new boolean[n+3];
-        visit[0] = true;
-        Queue<Integer> q = new LinkedList<>();
-        q.add(0);
 
-        while(!q.isEmpty())
-        {
-            int cur = q.poll();
-
-            if(cur==n+1)
-                return "happy";
-
-
-            for(Integer next : board[cur])
-            {
-                if(!visit[next])
-                {
-                    visit[next] = true;
-                    q.add(next);
-                }
-            }
-        }
-
-        return "sad";
+    static boolean getDis(int x,int y,int nx,int ny){
+        return (Math.abs(x - nx) + Math.abs(y - ny)) <= 1000;
     }
 
-    static int dis(point a,point b)
-    {
-        int x = Math.abs(Math.max(a.x,b.x) - Math.min(a.x,b.x));
-        int y = Math.abs(Math.max(a.y,b.y) - Math.min(a.y,b.y));
-
-        return (x + y);
-    }
-}
-class point
-{
-    int x;
-    int y;
-
-    point(int x,int y)
-    {
-        this.x = x;
-        this.y = y;
-    }
 }
