@@ -1,151 +1,123 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
 public class Main {
+
+    static int result = -1;
+    static int n = 0;
+    static int m = 0;
+    static char[][] board;
+
+    static int[][][] v;
 
     static int[] dx = {0,0,-1,1};
     static int[] dy = {1,-1,0,0};
-    static int result = Integer.MAX_VALUE;
-    static int sx = 0;
-    static int sy = 0;
 
-    static int[] key = {1,2,4,8,16,32};
+    static int sx,sy;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-        int n = Integer.parseInt(st.nextToken());
-        int m = Integer.parseInt(st.nextToken());
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        StringBuilder sb = new StringBuilder();
 
-        char[][] board = new char[n + 1][m + 1];
-        boolean[][][] visit = new boolean[n+1][m+1][200];
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
 
-        for (int i = 1; i <= n; i++) {
-            String line = br.readLine();
-            for (int j = 1; j <= m; j++) {
-                board[i][j] = line.charAt(j - 1);
-                if(board[i][j]=='0')
-                {
+        board = new char[n+1][m+1];
+        v = new int[n+1][m+1][1 << 7];
+
+        for(int i = 1 ; i <= n ; i++){
+            char[] curLine = br.readLine().toCharArray();
+
+            for(int j = 1 ; j <= m ; j++){
+                board[i][j] = curLine[j - 1];
+
+                if(board[i][j] == '0'){
                     sx = i;
                     sy = j;
                 }
             }
         }
 
-        bfs(sx,sy,board,visit,n,m);
-        if(result==Integer.MAX_VALUE)
-            result = -1;
-
+        bfs();
         System.out.println(result);
 
+
+        br.close();
     }
 
-    static void bfs(int x,int y,char[][] board,boolean[][][] visit,int n,int m)
-    {
-        Queue<point> q = new LinkedList<>();
-        q.add(new point(x,y,0,0));
-        visit[x][y][0] = true;
+    static boolean isOut(int x,int y){
+        if(x < 1 || x > n || y < 1 || y > m)
+            return true;
 
-        while(!q.isEmpty())
-        {
-            point cur = q.poll();
-            if(board[cur.x][cur.y]=='1')
-            {
-                result = Math.min(result,cur.move);
+        return false;
+    }
+
+    static void bfs(){
+        Queue<Point> q = new ArrayDeque<>();
+        q.add(new Point(sx,sy,0));
+        v[sx][sy][0] = 1;
+
+        while(!q.isEmpty()){
+            Point cur = q.poll();
+
+            if(board[cur.x][cur.y] == '1'){
+                result = v[cur.x][cur.y][cur.v] - 1;
+                break;
             }
 
-            for(int i=0;i<4;i++)
-            {
+            for(int i = 0 ; i< 4 ; i++){
                 int nx = cur.x + dx[i];
                 int ny = cur.y + dy[i];
 
-                if(nx<1||nx>n||ny<1||ny>m)
+                if(isOut(nx,ny))
                     continue;
 
-                if(board[nx][ny]!='#')
-                {
-                    if(board[nx][ny]>='A'&&board[nx][ny]<='F')
-                    {
-                        if(have(cur.k,board[nx][ny]))
-                        {
-                            if(!visit[nx][ny][cur.k])
-                            {
-                                visit[nx][ny][cur.k] = true;
-                                q.add(new point(nx,ny,cur.k,cur.move+1));
-                            }
+                if(board[nx][ny] == '#')
+                    continue;
+
+                if(board[nx][ny] == '.' || board[nx][ny] == '1' || board[nx][ny] == '0'){
+                    if(v[nx][ny][cur.v] == 0){
+                        v[nx][ny][cur.v] = v[cur.x][cur.y][cur.v] + 1;
+                        q.add(new Point(nx,ny,cur.v));
+                    }
+                }
+
+                else if(board[nx][ny] >= 'A' && board[nx][ny] <= 'F'){
+                    if((cur.v & (1 << (board[nx][ny] -'A'))) != 0){
+                        if(v[nx][ny][cur.v] == 0){
+                            v[nx][ny][cur.v] = v[cur.x][cur.y][cur.v] + 1;
+                            q.add(new Point(nx,ny,cur.v));
                         }
                     }
+                }
 
-                    else if(board[nx][ny]>='a'&&board[nx][ny]<='f')
-                    {
-                        if(!have(cur.k,board[nx][ny]))
-                        {
-                            int tmp = cur.k + key[convert(board[nx][ny])];
-                            if(!visit[nx][ny][tmp])
-                            {
-                                visit[nx][ny][tmp] = true;
-                                q.add(new point(nx,ny,tmp,cur.move+1));
-                            }
-                        }
-                        else{
-                            if(!visit[nx][ny][cur.k])
-                            {
-                                visit[nx][ny][cur.k] = true;
-                                q.add(new point(nx,ny,cur.k,cur.move+1));
-                            }
-                        }
-                    }
+                else if(board[nx][ny] >= 'a' && board[nx][ny] <= 'f'){
+                    int tmpV = cur.v | (1 << (board[nx][ny] - 'a'));
 
-                    else{
-                        if(!visit[nx][ny][cur.k])
-                        {
-                            visit[nx][ny][cur.k] = true;
-                            q.add(new point(nx,ny,cur.k,cur.move+1));
-                        }
+                    if(v[nx][ny][tmpV] == 0){
+                        v[nx][ny][tmpV] = v[cur.x][cur.y][cur.v] + 1;
+                        q.add(new Point(nx,ny,tmpV));
                     }
                 }
             }
         }
     }
-    static boolean have(int cur,char target)
-    {
-        int t = convert(target);
 
-        for(int i=5;i>=0;i--)
-        {
-            if(i==t)
-            {
-                if(cur>=key[i])
-                    return true;
-            }
-            if(cur>=key[i])
-            {
-                cur = cur - key[i];
-            }
+    static class Point{
+        int x;
+        int y;
+        int v;
+
+        Point(int x,int y,int v){
+            this.x = x;
+            this.y = y;
+            this.v = v;
         }
-
-        return false;
-    }
-
-    static int convert(char a)
-    {
-        if(a>='a'&&a<='f')
-            return a - 'a';
-        else
-            return a - 'A';
-    }
-}
-class point
-{
-    int x;
-    int y;
-
-    int k;
-    int move;
-    point(int x,int y,int k,int move)
-    {
-        this.x = x;
-        this.y = y;
-        this.k = k;
-        this.move = move;
     }
 }
