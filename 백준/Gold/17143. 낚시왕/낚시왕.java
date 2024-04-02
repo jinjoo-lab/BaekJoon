@@ -1,153 +1,161 @@
-import java.io.*;
+
 import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 public class Main {
-    static int n = 0;
-    static int m = 0;
-    static int k = 0;
-    static int[] dx = {0, -1, 1, 0, 0};
-    static int[] dy = {0, 0, 0, 1, -1};
 
-    static long result = 0;
+    static int result = 0;
+    static int n,m,k;
+    static Point[][] board;
 
-    static point[][] board = new point[101][101];
-    static Queue<point> q = new LinkedList<>();
-    public static void main(String[] args) throws IOException {
+    static int[] dx = {0,-1,1,0,0};
+    static int[] dy = {0,0,0,1,-1};
+
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
 
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
         k = Integer.parseInt(st.nextToken());
 
+        board = new Point[n+1][m+1];
 
-        for (int i = 1; i <= k; i++) {
-            st = new StringTokenizer(br.readLine(), " ");
-            int x = Integer.parseInt(st.nextToken());
-            int y = Integer.parseInt(st.nextToken());
-            int s = Integer.parseInt(st.nextToken());
-            int d = Integer.parseInt(st.nextToken());
-            int z = Integer.parseInt(st.nextToken());
+        for(int i = 1 ; i <= k ; i++){
+            st = new StringTokenizer(br.readLine()," ");
+            int x =  Integer.parseInt(st.nextToken());
+            int y =  Integer.parseInt(st.nextToken());
+            int s =  Integer.parseInt(st.nextToken());
+            int d =  Integer.parseInt(st.nextToken());
+            int z =  Integer.parseInt(st.nextToken());
 
-            point p = new point(x, y, s, d, z);
-
-            board[x][y] = p;
+            board[x][y] = new Point(x,y,s,d,z);
         }
-        for (int i = 1; i <= m; i++) {
-            get(i);
-            copy();
-            move();
 
+        for(int i = 1 ; i <= m ; i++){
+            take(i);
+            go();
         }
+
         System.out.println(result);
         br.close();
     }
 
-    static void get(int man) {
-        for(int i=1;i<=n;i++)
-        {
-            if(board[i][man]!=null)
-            {
-                result = result + board[i][man].z;
-                board[i][man] = null;
-                return;
-            }
+    static Point move(Point cur){
+        int rowNum = (n - 2) * 2 + 2;
+        int calNum = (m - 2) * 2 + 2;
+
+        int moveCount = 0;
+        int nx = cur.x;
+        int ny = cur.y;
+        int nd = cur.d;
+
+        if(cur.d == 1 || cur.d == 2){
+            moveCount = cur.s % rowNum;
+        }else{
+            moveCount = cur.s % calNum;
         }
-    }
 
-    static int change(int d) {
-        if (d == 1)
-            return 2;
-        if (d == 2)
-            return 1;
-        if (d == 3)
-            return 4;
-        if (d == 4)
-            return 3;
-        return 0;
-    }
+        int idx = 1;
+        while(idx <= moveCount){
+            nx = nx + dx[nd];
+            ny = ny + dy[nd];
 
-    static void copy()
-    {
-        for(int i=1;i<=n;i++)
-        {
-            for(int j=1;j<=m;j++)
-            {
-                if(board[i][j]!=null)
-                {
-                    q.add(board[i][j]);
-                }
+            if(isOut(nx,ny)){
+                nx = nx - dx[nd];
+                ny = ny - dy[nd];
+                nd = changeD(nd);
+                continue;
             }
+
+            idx++;
         }
+
+        return new Point(nx,ny,cur.s,nd,cur.z);
     }
-    static void move() {
-        point[][] tmp = new point[101][101];
 
-        while(!q.isEmpty())
-        {
-            point cur = q.poll();
+    static boolean isOut(int x,int y){
+        if(x < 1 || x > n || y < 1 || y > m)
+            return true;
 
-            int ny = cur.y;
-            int nx = cur.x;
-            int nd = cur.d;
+        return false;
+    }
 
-            if(cur.d==1||cur.d==2)
-            {
-                for (int j = 0; j < cur.s; j++) {
-                    nx = nx + dx[nd];
-                    if (nx == 0) {
-                        nx = 2;
-                        nd = change(nd);
-                    } else if (nx == n + 1) {
-                        nx = n - 1;
-                        nd = change(nd);
+    static void go(){
+        Point[][] tmpBoard = new Point[n+1][m+1];
+
+        for(int i = 1 ; i <= n ; i++){
+            for(int j = 1 ; j <= m ; j++){
+                if(board[i][j] != null){
+                    Point tmp = move(board[i][j]);
+
+                    if(tmpBoard[tmp.x][tmp.y] == null || tmpBoard[tmp.x][tmp.y].z < tmp.z){
+                        tmpBoard[tmp.x][tmp.y] = tmp;
                     }
                 }
             }
-            else if(cur.d==3||cur.d==4)
-            {
-                for (int j =0; j < cur.s; j++) {
-                    ny = ny + dy[nd];
-                    if (ny == 0) {
-                        ny = 2;
-                        nd = change(nd);
-                    } else if (ny == m + 1) {
-                        ny = m - 1;
-                        nd = change(nd);
-                    }
-                }
-            }
-
-            if(tmp[nx][ny]==null||tmp[nx][ny].z<cur.z)
-            {
-                point p = new point(nx,ny,cur.s,nd,cur.z);
-                tmp[nx][ny] = p;
-            }
         }
 
-        for(int i=1;i<=n;i++)
-        {
-            for(int j=1;j<=m;j++)
-            {
+        copy(tmpBoard);
+    }
+
+    static void copy(Point[][] tmp){
+        for(int i = 1 ; i <=n ; i++){
+            for(int j = 1 ; j <= m ; j++) {
                 board[i][j] = tmp[i][j];
             }
         }
     }
-}
 
-class point {
-    int x;
-    int y;
-    int s;
-    int d;
-    int z;
+    static void take(int idx){
 
-    point(int x, int y, int s, int d, int z) {
-        this.x = x;
-        this.y = y;
-        this.s = s;
-        this.d = d;
-        this.z = z;
+        int tIdx = 0;
+
+        for(int i = 1 ; i <= n ; i++){
+            if(board[i][idx] != null){
+                tIdx = i;
+                break;
+            }
+        }
+
+
+        if(tIdx == 0)
+            return;
+
+        result += board[tIdx][idx].z;
+        board[tIdx][idx] = null;
     }
 
+    static int changeD(int cur){
+        if(cur == 1)
+            return 2;
+
+        else if(cur == 2)
+            return 1;
+
+        else if(cur == 3)
+            return 4;
+
+        else
+            return 3;
+    }
+
+    static class Point{
+
+        int x;
+        int y;
+        int s;
+        int d;
+        int z;
+
+        Point(int x,int y,int s,int d,int z){
+            this.x = x;
+            this.y = y;
+            this.s = s;
+            this.d = d;
+            this.z = z;
+        }
+    }
 }
