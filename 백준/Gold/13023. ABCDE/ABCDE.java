@@ -1,75 +1,71 @@
-import java.io.*;
+
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    static int n = 0;
-    static int m = 0;
-    static ArrayList<ArrayList<Integer>> board= new ArrayList<>();
-    static boolean[] visit = new boolean[2001];
-    static boolean result = false;
 
-    public static void main(String[] args) throws IOException {
+    static int n,m;
+    static ArrayList<Integer>[] graph;
+
+    static boolean[] v;
+
+    static boolean possible = false;
+
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
         StringTokenizer st = new StringTokenizer(br.readLine()," ");
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
 
-        for(int i=0;i<n;i++)
-        {
-            board.add(new ArrayList<>());
+        graph = new ArrayList[n];
+        v = new boolean[n];
+
+        for(int i = 0 ; i < n ; i++){
+            graph[i] = new ArrayList<>();
         }
 
-        for(int i=1;i<=m;i++)
-        {
+        for(int i = 1 ; i <= m ; i++){
             st = new StringTokenizer(br.readLine()," ");
-            int x = Integer.parseInt(st.nextToken());
-            int y = Integer.parseInt(st.nextToken());
+            int v1 = Integer.parseInt(st.nextToken());
+            int v2 = Integer.parseInt(st.nextToken());
 
-            board.get(x).add(y);
-            board.get(y).add(x);
-        }
-
-        for(int i=0;i<n;i++)
-        {
-            if(!result)
-            {
-                visit[i] = true;
-                dfs(i,0);
-                visit[i] = false;
-            }
+            graph[v1].add(v2);
+            graph[v2].add(v1);
         }
 
-        if(result)
-        {
-            System.out.println(1);
+        for(int i = 0 ; i < n ; i++){
+            
+            v[i] = true;
+            go(i,1);
+            v[i] = false;
+
+            if(possible)
+                break;
         }
-        else{
-            System.out.println(0);
-        }
+
+        int num = possible ? 1 : 0;
+
+        System.out.println(num);
+
         br.close();
     }
 
-    static void dfs(int x,int num)
-    {
-        if(result)
-            return;
+    static void go(int idx,int num){
 
-        if(x>n-1)
+        if(possible)
             return;
-
-        if(num==4)
-        {
-            result = true;
+        
+        if(num == 5){
+            possible = true;
             return;
         }
-
-        for(int y : board.get(x))
-        {
-            if(!visit[y])
-            {
-                visit[y] = true;
-                dfs(y,num+1);
-                visit[y] = false;
+        
+        for(int next : graph[idx]){
+            if(!v[next]){
+                v[next] = true;
+                go(next,num + 1);
+                v[next] = false;
             }
         }
     }
