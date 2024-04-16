@@ -1,4 +1,3 @@
-
 import java.util.*;
 import java.io.*;
 
@@ -67,11 +66,35 @@ public class Main {
         return dp[1][len];
     }
 
+    static int calTem(){
+
+        int tmpResult = perBoard[1];
+
+        for(int i = 3 ; i <= 2*n -1 ; i+=2){
+            tmpResult = cal(tmpResult,perBoard[i],perBoard[i-1]);
+        }
+
+        return tmpResult;
+    }
+
     static int result = 0;
     static void comb(int depth,int cnt){
         if(depth > 2*n - 2) {
             if (cnt == p) {
-                result = Math.max(result,calAll());
+                int num = perBoard[1];
+                int tmpResult = 1;
+
+                for(int i = 2 ; i <= 2*n - 2 ; i+=2){
+                    if(perBoard[i] == 0){
+                        tmpResult *= num;
+                        num = perBoard[i+1];
+                    }else{
+                        num += perBoard[i+1];
+                    }
+                }
+
+                tmpResult *= num;
+                result = Math.max(result,tmpResult);
             }
             return;
         }
