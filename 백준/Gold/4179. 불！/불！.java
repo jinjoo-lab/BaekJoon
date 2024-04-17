@@ -1,128 +1,144 @@
+
 import java.util.*;
 import java.io.*;
-class Main {
-    static int n = 0;
-    static int m = 0;
-    static char[][] board = new char[1001][1001];
-    static int[][] jvisit = new int[1001][1001];
-    static int[][] fvisit = new int[1001][1001];
-    static Queue<pair> jq = new LinkedList<>();
-    static Queue<pair> fq = new LinkedList<>();
-    public static void main(String[] args) throws IOException {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        boolean complete = false;
-        String[] line = bf.readLine().split(" ");
-        n = Integer.parseInt(line[0]);
-        m = Integer.parseInt(line[1]);
 
-        for(int i=1;i<=n;i++)
-        {
-            line = bf.readLine().split("");
-            for(int j=1;j<=m;j++)
-            {
-                board[i][j] = line[j-1].charAt(0);
-                if(board[i][j]=='J') {
-                    jq.add(new pair(i, j));
-                    jvisit[i][j]=1;
-                    if(i==1||i==n||j==1||j==m)
-                        complete = true;
+public class Main {
+
+    static int n,m;
+    static char[][] board;
+
+    static Queue<Node> fireQ = new ArrayDeque<>();
+
+    static int[][] fv;
+    static int[][] jv;
+
+    static int sx,sy;
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
+
+        board = new char[n+1][m+1];
+        fv = new int[n+1][m+1];
+        jv = new int[n+1][m+1];
+
+        for(int i = 1 ; i <= n ; i++){
+            char[] arr = br.readLine().toCharArray();
+
+            for(int j = 1 ; j <= m ; j++){
+                board[i][j] = arr[j-1];
+
+                if(board[i][j] == 'F'){
+                    fv[i][j] = 1;
+                    fireQ.add(new Node(i,j));
                 }
-                else if(board[i][j]=='F') {
-                    fq.add(new pair(i, j));
-                    fvisit[i][j]=1;
+
+                if(board[i][j] == 'J'){
+                    sx = i;
+                    sy = j;
                 }
             }
         }
-        if(complete)
-            System.out.println(1);
-        else{
-            while(true)
-            {
-                bfs2();
-                int result = bfs();
-                if(result>0) {
-                    System.out.println(result);
-                    break;
-                }
-                else if(result==-1)
-                {
-                    System.out.println("IMPOSSIBLE");
-                    break;
-                }
-            }
+
+        fire();
+        int result = jMove();
+
+        if(result == -1){
+            System.out.println("IMPOSSIBLE");
+        }else{
+            System.out.println(result);
         }
-        bf.close();
+
+        br.close();
     }
-    static int bfs()
-    {
-        int[] dx ={0,0,-1,1};
-        int[] dy = {1,-1,0,0};
-        int size = jq.size();
-        if(size==0)
-            return -1;
-        while(size!=0)
-        {
-            pair cur = jq.poll();
-            size--;
 
-            for(int i=0;i<4;i++)
-            {
+    static int[] dx = {0,0,-1,1};
+    static int[] dy = {1,-1,0,0};
+
+    static int jMove(){
+        jv[sx][sy] = 1;
+        Queue<Node> q = new ArrayDeque<>();
+        q.add(new Node(sx,sy));
+
+        int result = -1;
+
+        loop : while(!q.isEmpty()){
+            Node cur = q.poll();
+
+
+            for(int i = 0 ; i < 4 ; i++){
                 int nx = cur.x + dx[i];
                 int ny = cur.y + dy[i];
 
-                if(nx==1||ny==1||nx==n||ny==m)
-                {
-                    if(board[nx][ny]=='.')
-                    {
-                        return jvisit[cur.x][cur.y]+1;
-                    }
+                if(isOut(nx,ny)) {
+                    result = jv[cur.x][cur.y];
+                    break loop;
                 }
-                if(nx>=1&&nx<=n&&ny>=1&&ny<=m)
-                {
-                    if(jvisit[nx][ny]==0&&board[nx][ny]=='.')
-                    {
-                        jvisit[nx][ny]=jvisit[cur.x][cur.y]+1;
-                        board[nx][ny]='J';
-                        jq.add(new pair(nx,ny));
-                    }
+
+                if(board[nx][ny] == 'F' || board[nx][ny] == '#')
+                    continue;
+
+                if(jv[nx][ny] != 0)
+                    continue;
+
+                if(fv[nx][ny] > jv[cur.x][cur.y] + 1 || fv[nx][ny] == 0){
+                    jv[nx][ny] = jv[cur.x][cur.y] + 1;
+                    q.add(new Node(nx,ny));
                 }
             }
         }
-        return 0;
+
+        return result;
     }
-    static void bfs2()
-    {
-        int[] dx ={0,0,-1,1};
-        int[] dy = {1,-1,0,0};
-        int size = fq.size();
-        while(size!=0)
-        {
-            pair cur = fq.poll();
-            size=size-1;
-            for(int i=0;i<4;i++)
-            {
+
+    static void fire(){
+        while(!fireQ.isEmpty()){
+            Node cur = fireQ.poll();
+
+            for(int i = 0 ; i < 4 ; i++){
                 int nx = cur.x + dx[i];
                 int ny = cur.y + dy[i];
 
-                if(nx>=1&&nx<=n&&ny>=1&&ny<=m)
-                {
-                    if(fvisit[nx][ny]==0&&board[nx][ny]=='.')
-                    {
-                        fvisit[nx][ny]=1;
-                        board[nx][ny]='F';
-                        fq.add(new pair(nx,ny));
-                    }
-                }
+                if(isOut(nx,ny) || board[nx][ny] =='#')
+                    continue;
+
+                if(fv[nx][ny] != 0)
+                    continue;
+
+                fv[nx][ny] = fv[cur.x][cur.y] + 1;
+                fireQ.add(new Node(nx,ny));
             }
         }
+
     }
-}
-class pair{
-    int x;
-    int y;
-    pair(int x,int y)
-    {
-        this.x =x;
-        this.y =y;
+
+    static void print(int[][] v){
+        for(int i = 1 ; i <= n ; i++){
+            for(int j = 1 ; j <= m ; j++){
+                System.out.print(v[i][j]+" ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+    static boolean isOut(int x,int y){
+        if(x < 1 || x > n || y < 1 || y > m)
+            return true;
+
+        return false;
+    }
+
+    static class Node{
+        int x;
+        int y;
+
+        Node(int x,int y){
+            this.x = x;
+            this.y = y;
+        }
     }
 }
