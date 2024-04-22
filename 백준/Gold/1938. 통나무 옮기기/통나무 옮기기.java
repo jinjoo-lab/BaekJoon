@@ -1,248 +1,232 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    static int n = 0;
-    static int[][] board = new int[55][55];
-    static int[] turnx = {-1,-1,-1,0,0,1,1,1};
-    static int[] turny = {-1,0,1,-1,1,-1,0,1};
-    static int mx = 0;
-    static int my = 0;
-    static int sdir = -1;
-    static int ldir = -1;
-    static int lx = 0;
-    static int ly = 0;
-    static int result = 0;
-    public static void main(String[] args) throws IOException {
+    static int n;
+    static char[][] board;
+    static int[][] train = new int[4][2];
+    static int count = Integer.MAX_VALUE;
+    static int idx = 1;
+
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
         n = Integer.parseInt(st.nextToken());
-        int count = 0;
-        int last = 0;
-        int smx = 0;
-        int smy = 0;
-        int lmx = 0;
-        int lmy = 0;
-        for (int i = 1; i <= n; i++) {
-            String[] line = br.readLine().split("");
-            for (int j = 1; j <= n; j++) {
-                if (line[j - 1].equals("B")) {
-                    if (count == 0) {
-                        smx = i;
-                        smy = j;
-                    }
 
-                    if (count == 1) {
-                        mx = i;
-                        my = j;
-                    }
-                    board[i][j] = 2;
-                    count = count + 1;
-                } else if (line[j - 1].equals("E")) {
-                    if (last == 0) {
-                        lmx = i;
-                        lmy = j;
-                    }
-                    if (last == 1) {
-                        lx = i;
-                        ly = j;
-                    }
-                    board[i][j] = 3;
-                    last = last + 1;
-                } else
-                    board[i][j] = Integer.parseInt(line[j - 1]);
+        board = new char[n+1][n+1];
+
+        for(int i = 1 ; i <= n ; i++) {
+            char[] arr = br.readLine().toCharArray();
+
+            for(int j= 1 ; j <= n ; j++) {
+                board[i][j] = arr[j-1];
+
+                if(board[i][j] == 'B') {
+                    train[idx][0] = i;
+                    train[idx][1] = j;
+                    idx++;
+                }
             }
-        }
-        if (smx == mx) {
-            sdir = 1;
-        } else {
-            sdir = 2;
-        }
-
-        if (lmx == lx) {
-            ldir = 1;
-        } else {
-            ldir = 2;
         }
 
         bfs();
-        System.out.println(result);
+
+        if(count == Integer.MAX_VALUE)
+            count = 0;
+
+        System.out.println(count);
+
+
         br.close();
     }
 
-    static void bfs()
-    {
-        Queue<point> q = new LinkedList<>();
-        int[][][] visit = new int[55][55][3];
-        visit[mx][my][sdir] = 1;
-        q.add(new point(mx,my,sdir));
 
-        while(!q.isEmpty())
-        {
-            point cur = q.poll();
-            if(cur.x==lx&&cur.y==ly&&cur.dir==ldir)
-            {
-                if(result==0||result>visit[cur.x][cur.y][cur.dir])
-                {
-                    result = visit[cur.x][cur.y][cur.dir]-1;
-                }
-            }
+    static int[] dx = {0,0,-1,1};
+    static int[] dy = {1,-1,0,0};
 
-            if(result!=0&&result<visit[cur.x][cur.y][cur.dir])
-                continue;
+    static void bfs() {
 
-            for(int i=0;i<5;i++)
-            {
-                if(i==0)
-                {
-                    if(cur.dir==1&&cur.x>=2&&cur.y>1&&cur.y<n)
-                    {
-                        if(board[cur.x-1][cur.y-1]!=1&&board[cur.x-1][cur.y]!=1&&board[cur.x-1][cur.y+1]!=1)
-                        {
-                            if(visit[cur.x-1][cur.y][cur.dir]==0||visit[cur.x][cur.y][cur.dir]+1<visit[cur.x-1][cur.y][cur.dir]) {
-                                visit[cur.x-1][cur.y][cur.dir] = visit[cur.x][cur.y][cur.dir]+1;
-                                q.add(new point(cur.x-1,cur.y,cur.dir));
-                            }
-                        }
-                    }
-                    else if(cur.dir==2&&cur.x>=3){
-                        if(board[cur.x-2][cur.y]!=1&&board[cur.x-1][cur.y]!=1&&board[cur.x][cur.y]!=1)
-                        {
-                            if(visit[cur.x-1][cur.y][cur.dir]==0||visit[cur.x][cur.y][cur.dir]+1<visit[cur.x-1][cur.y][cur.dir]) {
-                                visit[cur.x-1][cur.y][cur.dir] = visit[cur.x][cur.y][cur.dir]+1;
-                                q.add(new point(cur.x-1,cur.y,cur.dir));
-                            }
-                        }
-                    }
-                }
+        int[][][] v = new int[n+1][n+1][2];
+        int type = 0;
+        Queue<Node> q = new ArrayDeque<>();
 
-                else if(i==1)
-                {
-                    if(cur.dir==1&&cur.x<n&&cur.y>1&&cur.y<n)
-                    {
-                        if(board[cur.x+1][cur.y-1]!=1&&board[cur.x+1][cur.y]!=1&&board[cur.x+1][cur.y+1]!=1)
-                        {
-                            if(visit[cur.x+1][cur.y][cur.dir]==0||visit[cur.x][cur.y][cur.dir]+1<visit[cur.x+1][cur.y][cur.dir])
-                            {
-                                visit[cur.x+1][cur.y][cur.dir] = visit[cur.x][cur.y][cur.dir]+1;
-                                q.add( new point(cur.x+1,cur.y,cur.dir));
-                            }
-                        }
-                    }
-                    else if(cur.dir==2&&cur.x<n-1){
-                        if(board[cur.x+2][cur.y]!=1&&board[cur.x+1][cur.y]!=1&&board[cur.x][cur.y]!=1)
-                        {
-                            if(visit[cur.x+1][cur.y][cur.dir]==0||visit[cur.x][cur.y][cur.dir]+1<visit[cur.x+1][cur.y][cur.dir])
-                            {
-                                visit[cur.x+1][cur.y][cur.dir] = visit[cur.x][cur.y][cur.dir]+1;
-                                q.add( new point(cur.x+1,cur.y,cur.dir));
-                            }
-                        }
-                    }
-                }
-
-                else if(i==2)
-                {
-                    if(cur.dir==1&&cur.y>=3)
-                    {
-                        if(board[cur.x][cur.y-2]!=1&&board[cur.x][cur.y-1]!=1&&board[cur.x][cur.y]!=1)
-                        {
-                            if(visit[cur.x][cur.y-1][cur.dir]==0||visit[cur.x][cur.y][cur.dir] +1 < visit[cur.x][cur.y-1][cur.dir])
-                            {
-                                visit[cur.x][cur.y-1][cur.dir] = visit[cur.x][cur.y][cur.dir] +1;
-                                q.add(new point(cur.x,cur.y-1,cur.dir));
-                            }
-                        }
-                    }
-
-                    else if(cur.dir==2&&cur.y>=2&&cur.x>1&&cur.x<n) {
-                        if(board[cur.x-1][cur.y-1]!=1&&board[cur.x][cur.y-1]!=1&&board[cur.x+1][cur.y-1]!=1)
-                        {
-                            if(visit[cur.x][cur.y-1][cur.dir]==0||visit[cur.x][cur.y][cur.dir] +1 < visit[cur.x][cur.y-1][cur.dir])
-                            {
-                                visit[cur.x][cur.y-1][cur.dir] = visit[cur.x][cur.y][cur.dir] +1;
-                                q.add(new point(cur.x,cur.y-1,cur.dir));
-                            }
-                        }
-                    }
-                }
-
-                else if(i==3)
-                {
-                    if(cur.dir==1&&cur.y<n-1)
-                    {
-                        if(board[cur.x][cur.y+2]!=1&&board[cur.x][cur.y+1]!=1&&board[cur.x][cur.y]!=1)
-                        {
-                            if(visit[cur.x][cur.y+1][cur.dir]==0||visit[cur.x][cur.y][cur.dir]+1<visit[cur.x][cur.y+1][cur.dir])
-                            {
-                                visit[cur.x][cur.y+1][cur.dir] = visit[cur.x][cur.y][cur.dir]+1;
-                                q.add(new point(cur.x,cur.y+1,cur.dir));
-                            }
-                        }
-                    }
-
-                    else if(cur.dir==2&&cur.y<n&&cur.x>1&&cur.x<n)
-                    {
-                        if(board[cur.x-1][cur.y+1]!=1&&board[cur.x][cur.y+1]!=1&&board[cur.x+1][cur.y+1]!=1)
-                        {
-                            if(visit[cur.x][cur.y+1][cur.dir]==0||visit[cur.x][cur.y][cur.dir]+1<visit[cur.x][cur.y+1][cur.dir])
-                            {
-                                visit[cur.x][cur.y+1][cur.dir] = visit[cur.x][cur.y][cur.dir]+1;
-                                q.add(new point(cur.x,cur.y+1,cur.dir));
-                            }
-                        }
-                    }
-                }
-
-                else if(i==4)
-                {
-                    boolean keep = true;
-                    for(int j=0;j<8;j++)
-                    {
-                        int nx = cur.x + turnx[j];
-                        int ny = cur.y + turny[j];
-
-                        if(nx<1||nx>n||ny<1||ny>n) {
-                            keep = false;
-                            break;
-                        }
-
-                        else if(board[nx][ny]==1) {
-                            keep = false;
-                            break;
-                        }
-                    }
-                    if(cur.dir==1&&keep)
-                    {
-                        if(visit[cur.x][cur.y][2]==0||visit[cur.x][cur.y][cur.dir]+1<visit[cur.x][cur.y][2])
-                        {
-                            visit[cur.x][cur.y][2] = visit[cur.x][cur.y][cur.dir]+1;
-                            q.add(new point(cur.x,cur.y,2));
-                        }
-                    }
-
-                    else if(cur.dir==2&&keep){
-                        if(visit[cur.x][cur.y][1]==0||visit[cur.x][cur.y][cur.dir]+1<visit[cur.x][cur.y][1])
-                        {
-                            visit[cur.x][cur.y][1] = visit[cur.x][cur.y][cur.dir]+1;
-                            q.add(new point(cur.x,cur.y,1));
-                        }
-                    }
-                }
-            }
+        if(train[1][0] == train[2][0] && train[2][0] == train[3][0]) {
+            // row 가로 열차
+            type = 0;
         }
-    }
-}
-class point
-{
-    int x;
-    int y;
-    int dir;
 
-    point(int x,int y,int dir)
-    {
-        this.x = x;
-        this.y = y;
-        this.dir = dir;
+        else if(train[1][1] == train[2][1] && train[2][1] == train[3][1]) {
+            // col 세로 열차
+            type = 1;
+        }
+
+        v[train[2][0]][train[2][1]][type] = 1;
+        q.add(new Node(train,type));
+
+        while(!q.isEmpty()) {
+            Node cur = q.poll();
+
+            if(find(cur.train)) {
+
+                count = Math.min(count, v[cur.train[2][0]][cur.train[2][1]][cur.type] - 1);
+                continue;
+            }
+
+            for(int i = 0 ; i< 4 ; i++) {
+                boolean tmp = canMove(i,cur.train);
+
+                if(!tmp)
+                    continue;
+
+                int nextCount = v[cur.train[2][0]][cur.train[2][1]][cur.type] + 1;
+
+                int nx = cur.train[2][0] + dx[i];
+                int ny = cur.train[2][1] + dy[i];
+
+                if(v[nx][ny][cur.type] == 0 || v[nx][ny][cur.type] > nextCount) {
+                    v[nx][ny][cur.type] = nextCount;
+
+                    int[][] nTrain = new int[4][2];
+
+                    for(int j = 1 ; j <= 3 ; j++) {
+                        nTrain[j][0] = cur.train[j][0] + dx[i];
+                        nTrain[j][1] = cur.train[j][1] + dy[i];
+                    }
+
+                    q.add(new Node(nTrain,cur.type));
+                }
+            }
+
+            if(canTurn(cur.train[2][0], cur.train[2][1])) {
+
+
+                int nextM = v[cur.train[2][0]][cur.train[2][1]][cur.type] + 1;
+                int nextT = change(cur.type);
+
+                if(v[cur.train[2][0]][cur.train[2][1]][nextT] == 0 ||
+                        v[cur.train[2][0]][cur.train[2][1]][nextT] > nextM) {
+                    v[cur.train[2][0]][cur.train[2][1]][nextT] = nextM;
+                    if(cur.type == 0) {
+                        // garo -> sero
+                        int[][] nTrain = new int[4][2];
+
+                        nTrain[1][0] = cur.train[2][0] - 1;
+                        nTrain[1][1] = cur.train[2][1];
+                        nTrain[2][0] = cur.train[2][0];
+                        nTrain[2][1] = cur.train[2][1];
+                        nTrain[3][0] = cur.train[2][0] + 1;
+                        nTrain[3][1] = cur.train[2][1];
+
+                        q.add(new Node(nTrain,nextT));
+                    }else {
+                        // sero -> garo
+                        int[][] nTrain = new int[4][2];
+
+                        nTrain[1][0] = cur.train[2][0];
+                        nTrain[1][1] = cur.train[2][1] - 1;
+                        nTrain[2][0] = cur.train[2][0];
+                        nTrain[2][1] = cur.train[2][1];
+                        nTrain[3][0] = cur.train[2][0];
+                        nTrain[3][1] = cur.train[2][1] + 1;
+
+                        q.add(new Node(nTrain,nextT));
+                    }
+
+
+                }
+
+            }
+
+        }
+
+       // print(v);
+
+    }
+
+    static boolean find(int[][] train) {
+        if(board[train[1][0]][train[1][1]] == 'E' && board[train[2][0]][train[2][1]] == 'E' && board[train[3][0]][train[3][1]] == 'E') {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    static int[] tx = {0,0,-1,1,1,1,-1,-1};
+    static int[] ty = {1,-1,0,0,1,-1,1,-1};
+
+    static boolean canTurn(int x,int y) {
+        for(int i = 0 ; i < 8 ; i++) {
+            int nx = x + tx[i];
+            int ny = y + ty[i];
+
+            if(isOut(nx,ny))
+                return false;
+
+            if(board[nx][ny] == '1')
+                return false;
+        }
+
+        return true;
+    }
+
+
+    static int change(int type) {
+        if(type == 1)
+            return 0;
+
+        return 1;
+    }
+
+
+    static boolean canMove(int dir,int[][] train) {
+        for(int j = 1 ; j <= 3 ; j++) {
+            int nx = train[j][0] + dx[dir];
+            int ny = train[j][1] + dy[dir];
+
+            if(isOut(nx,ny))
+                return false;
+
+            if(board[nx][ny] == '1')
+                return false;
+        }
+
+
+        return true;
+    }
+
+
+    static boolean isOut(int x,int y) {
+        if(x < 1 || x > n || y < 1 || y> n)
+            return true;
+
+        return false;
+    }
+
+    static void print(int[][][] v) {
+        for(int i = 1; i <= n ; i++) {
+            for(int j =1 ; j <= n ; j++) {
+                System.out.print("("+v[i][j][0] +","+ v[i][j][1]+") ");
+            }System.out.println();
+        }System.out.println();
     }
 }
+
+class Node{
+    int[][] train;
+    int type;
+
+    Node(int[][] train,int type){
+
+        this.train = new int[4][2];
+
+        for(int i = 1 ; i <= 3 ; i++) {
+            this.train[i][0] = train[i][0];
+            this.train[i][1] = train[i][1];
+        }
+
+        this.type = type;
+    }
+}
+
+
