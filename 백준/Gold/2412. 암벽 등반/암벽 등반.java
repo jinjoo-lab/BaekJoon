@@ -1,4 +1,3 @@
-
 import java.util.*;
 import java.io.*;
 
@@ -45,7 +44,7 @@ public class Main {
                     int nx = cur.x + i;
                     int ny = cur.y + j;
 
-                    if(nx < 0 || nx >= 1_000_001 || ny < 0 || ny >= 1_000_001){
+                    if(nx < 0 || nx >= 1_000_001 || ny < 0 || ny > t){
                         continue;
                     }
 
