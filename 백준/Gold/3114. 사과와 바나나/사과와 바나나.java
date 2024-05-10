@@ -60,17 +60,19 @@ public class Main {
             reArr[i][1] = reArr[i-1][1] - dp[i][1][1] + dp[i+1][1][1];
         }
 
+        int val1,val2,val3;
+        
         for(int i = 2 ; i <= n ; i++){
             for(int j = 2 ; j <= m ; j++){
 
                 // ->
-                int val1 = reArr[i][j-1] + dp[i+1][j][1] + dp[i-1][j][0];
+                val1 = reArr[i][j-1] + dp[i+1][j][1] + dp[i-1][j][0];
 
                 // \
-                int val2 = reArr[i-1][j-1] + dp[i+1][j][1] + dp[i-1][j][0];
+                val2 = reArr[i-1][j-1] + dp[i+1][j][1] + dp[i-1][j][0];
 
                 // |
-                int val3 = reArr[i-1][j] - dp[i][j][1] + dp[i+1][j][1];
+                val3 = reArr[i-1][j] - dp[i][j][1] + dp[i+1][j][1];
 
                 reArr[i][j] = Math.max(Math.max(val1,val2),val3);
             }
@@ -80,32 +82,5 @@ public class Main {
 
 
         br.close();
-    }
-    static void print(int[][][] arr){
-        for(int i = 1 ; i <= n ; i++){
-            for(int j = 1 ; j <= m ; j++){
-                System.out.print(arr[i][j][0]+" ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-
-        for(int i = 1 ; i <= n ; i++){
-            for(int j = 1 ; j <= m ; j++){
-                System.out.print(arr[i][j][1]+" ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-    }
-
-    static void print(int[][] arr){
-        for(int i = 1 ; i <= n ; i++){
-            for(int j = 1 ; j <= m ; j++){
-                System.out.print(arr[i][j]+" ");
-            }
-            System.out.println();
-        }
-        System.out.println();
     }
 }
