@@ -43,6 +43,7 @@ fun search() : Int {
     pq.add(Node(s,0))
 
     var dis = Array(n+1) {Int.MAX_VALUE}
+    var max = Array(n + 1) {0}
 
     dis[s] = 0
 
@@ -52,21 +53,14 @@ fun search() : Int {
         var cur = pq.poll();
 
         if(cur.v == t) {
-            Collections.sort(cur.path,{x: Int , y : Int -> x - y})
-
-            for(num in 0..cur.path.size - 2) {
-                result += cur.path.get(num)
-            }
-            
+            result = dis[cur.v] - cur.max
             break
         }
 
         for(next in graph[cur.v]) {
             if(dis[next.v] > cur.c + next.c) {
                 dis[next.v] = cur.c + next.c
-                var tmp = Node(next.v,dis[next.v])
-                tmp.path.addAll(cur.path)
-                tmp.path.add(next.c)
+                var tmp = Node(next.v,dis[next.v],Math.max(cur.max,next.c))
                 pq.add(tmp)
             }
         }
@@ -79,11 +73,17 @@ fun search() : Int {
 class Node {
     var v : Int = 0
     var c : Int = 0
-    var path : ArrayList<Int> = ArrayList<Int>()
+    var max : Int = 0
 
     constructor(v : Int , c : Int) {
-        this.v = v;
-        this.c = c;
+        this.v = v
+        this.c = c
+    }
+
+    constructor(v : Int , c : Int , max : Int) {
+        this.v = v
+        this.c = c
+        this.max = max
     }
 }
 
