@@ -66,21 +66,14 @@ public class Main {
 
         int tmpH = sy;
 
-        for(int j = sx - 1; j >= 0 ; j--) {
+        for(int j = sx ; j >= 0 ; j--) {
             tmpH = Math.min(board[j][0],tmpH);
             board[j][1] = Math.max(board[j][1],tmpH);
         }
 
         tmpH = sy;
 
-        for(int j = sx ; j <= lx ; j++) {
-            tmpH = Math.min(board[j][0],tmpH);
-            board[j][1] = Math.max(board[j][1],tmpH);
-        }
-
-        tmpH = sy;
-
-        for(int j = lx + 1; j < ex ; j++) {
+        for(int j = sx; j < ex ; j++) {
             tmpH = Math.min(board[j][0],tmpH);
             board[j][1] = Math.max(board[j][1],tmpH);
         }
