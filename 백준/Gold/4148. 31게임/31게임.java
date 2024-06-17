@@ -59,19 +59,22 @@ public class Main {
         int result = 0;
 
         for(int i = 1 ; i <= 6; i ++) {
+
             if(num[i] >= 1 && rest - i >= 0) {
 
                 int tmpRest = rest - i;
-                num[i] -= 1;
-                int tmp = go(!turn,tmpRest);
-                num[i] += 1;
+
                 if(turn) {
                     if(result == 0 || result == 2) {
-                        result = tmp;
+                        num[i] -= 1;
+                        result  = go(!turn,tmpRest);
+                        num[i] += 1;
                     }
                 }else {
                     if(result == 0 || result == 1) {
-                        result = tmp;
+                        num[i] -= 1;
+                        result  = go(!turn,tmpRest);
+                        num[i] += 1;
                     }
                 }
             }else {
