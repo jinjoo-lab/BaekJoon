@@ -1,107 +1,69 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder output = new StringBuilder();
+        
+        int n = Integer.parseInt(reader.readLine());
+        List<Integer> p = new ArrayList<>();
+        List<Integer> m = new ArrayList<>();
+        
+        StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
+        for (int i = 0; i < n; i++) {
+            int t = Integer.parseInt(tokenizer.nextToken());
+            if (t > 0) {
+                p.add(t);
+            } else {
+                m.add(t);
+            }
+        }
+        
+        
+        p.sort(Collections.reverseOrder());
+        m.sort(Comparator.naturalOrder());
 
-    static int n;
+        Deque<Integer> pp = new ArrayDeque<>();
+        Deque<Integer> mm = new ArrayDeque<>();
 
-    static PriorityQueue<Integer> ppq = new PriorityQueue<>(
-            (x,y) -> y - x
-    );
-
-    static PriorityQueue<Integer> mpq = new PriorityQueue<>(
-            (x,y) -> x - y
-    );
-
-    static Deque<Integer> minus = new ArrayDeque<>();
-    static Deque<Integer> plus = new ArrayDeque<>();
-    static Deque<Integer> zero = new ArrayDeque<>();
-
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        n = Integer.parseInt(br.readLine());
-
-        StringTokenizer st = new StringTokenizer(br.readLine()," ");
-
-        for(int i = 0 ; i < n ; i++) {
-            int tmp = Integer.parseInt(st.nextToken());
-
-            if(tmp == 0) {
-                zero.add(0);
-            }else if(tmp > 0) {
-                ppq.add(tmp);
-            }else {
-                mpq.add(tmp);
+        for (int i = 0; i < p.size(); i++) {
+            if (i % 2 == 0) {
+                pp.addFirst(p.get(i));
+            } else {
+                pp.addLast(p.get(i));
             }
         }
 
-        while(!ppq.isEmpty()) {
-            int tmp = ppq.poll();
-
-            if(plus.isEmpty() || plus.size() == 1) {
-                plus.add(tmp);
-            }else {
-                if(plus.peekFirst() >= plus.peekLast()) {
-                    plus.addFirst(tmp);
-                }else {
-                    plus.addLast(tmp);
-                }
+        for (int i = 0; i < m.size(); i++) {
+            if (i % 2 == 0) {
+                mm.addFirst(m.get(i));
+            } else {
+                mm.addLast(m.get(i));
             }
         }
 
-        while(!mpq.isEmpty()) {
-            int tmp = mpq.poll();
-
-            if(minus.isEmpty() || minus.size() == 1) {
-                minus.add(tmp);
-            }else {
-                if(minus.peekFirst() * -1 >= minus.peekLast() * -1) {
-                    minus.addFirst(tmp);
-                }else {
-                    minus.addLast(tmp);
-                }
-            }
+        if (!pp.isEmpty() && pp.peekFirst() > pp.peekLast()) {
+            reverseDeque(pp);
+        }
+        if (!mm.isEmpty() && mm.peekFirst() > mm.peekLast()) {
+            reverseDeque(mm);
         }
 
-        StringBuilder sb = new StringBuilder();
-
-        if(zero.isEmpty()) {
-            if(minus.isEmpty()) {
-                while(!plus.isEmpty()) {
-                    sb.append(plus.poll()).append(" ");
-                }
-            }else if(plus.isEmpty()) {
-                while(!minus.isEmpty()) {
-                    sb.append(minus.poll()).append(" ");
-                }
-            }else {
-                if(plus.peekLast() * minus.peekFirst() >= plus.peekFirst() * minus.peekLast()) {
-                    while(!plus.isEmpty()) {
-                        sb.append(plus.poll()).append(" ");
-                    }while(!minus.isEmpty()) {
-                        sb.append(minus.poll()).append(" ");
-                    }
-                }else {
-                    while(!minus.isEmpty()) {
-                        sb.append(minus.poll()).append(" ");
-                    }while(!plus.isEmpty()) {
-                        sb.append(plus.poll());
-                    }
-                }
-            }
-        }else {
-            while(!minus.isEmpty()) {
-                sb.append(minus.poll()).append(" ");
-            }while(!zero.isEmpty()) {
-                sb.append(zero.poll()).append(" ");
-            }while(!plus.isEmpty()) {
-                sb.append(plus.poll()).append(" ");
-            }
+        for (int num : mm) {
+            output.append(num).append(" ");
+        }
+        for (int num : pp) {
+            output.append(num).append(" ");
         }
 
-        System.out.println(sb.toString());
-
-        br.close();
+        System.out.print(output.toString().trim());
     }
 
+    private static void reverseDeque(Deque<Integer> deque) {
+        List<Integer> temp = new ArrayList<>(deque);
+        Collections.reverse(temp);
+        deque.clear();
+        deque.addAll(temp);
+    }
 }
