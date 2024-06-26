@@ -48,9 +48,7 @@ fun search() : Boolean{
 
     var visit = Array<Int>(n+1) {-1}
 
-    var pq : PriorityQueue<MyNode> = PriorityQueue(
-        {x,y -> y.v - x.v}
-    )
+    var pq  = ArrayDeque<MyNode>()
 
     visit[1] = 0
     pq.add(MyNode(1,0 + if(room[1].w == 'E') room[1].v else 0))
