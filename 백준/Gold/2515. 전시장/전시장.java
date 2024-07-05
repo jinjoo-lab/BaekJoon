@@ -35,41 +35,29 @@ public class Main {
         dp = new long[n + 1][2];
         // 잡을 때
         // 안잡을 때
-        
+
         dp[1][0] = board[1][1];
+        int tmpIdx = 1;
+
 
         for(int i = 2 ; i <= n ; i++) {
             int curLen = board[i][0];
             int curV = board[i][1];
 
             dp[i][0] = Math.max(dp[i-1][0],dp[i-1][1]);
+            dp[i][1] = dp[i][0];
 
-            int tmpIdx = find(1, i, curLen - m);
+            while(board[tmpIdx][0] <= curLen - m) {
+                tmpIdx++;
+            }
+            tmpIdx -= 1;
 
-            dp[i][0] = Math.max(dp[tmpIdx][0],dp[tmpIdx][1]) + curV;
-            dp[i][1] = Math.max(dp[i-1][0],dp[i-1][1]);
-
+            dp[i][0] = Math.max(dp[i][0],Math.max(dp[tmpIdx][0],dp[tmpIdx][1]) + curV);
         }
 
         System.out.println(Math.max(dp[n][0],dp[n][1]));
 
         br.close();
-    }
-
-    static int find(int l,int r,int target) {
-        int mid = 0;
-
-        while(l <= r) {
-            mid = (l + r) / 2;
-
-            if(board[mid][0] <= target) {
-                l = mid + 1;
-            }else {
-                r = mid - 1;
-            }
-        }
-
-        return r;
     }
 }
 
