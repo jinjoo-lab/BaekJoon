@@ -1,62 +1,48 @@
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-
-    static int N;
-    static long result=0;
-    static Node node[];
-    public static void main(String[] args) throws IOException {
+    static int n;
+    static long[][] board;
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+        n = Integer.parseInt(br.readLine());
+        StringTokenizer st;
 
-        N= Integer.parseInt(st.nextToken());
-        node = new Node[N];
+        long d = 0;
+        long v = 0;
+        long total = 0;
 
-        for(int i=0;i<N;i++) {
-            st = new StringTokenizer(br.readLine());
-            long X = Long.parseLong(st.nextToken());
-            long A = Long.parseLong(st.nextToken());
-            node[i] = new Node(X,A);
-            result +=A;
+        board = new long[n][2];
+
+        for(int i = 1 ; i <= n ; i++) {
+            st = new StringTokenizer(br.readLine()," ");
+
+            d = Long.parseLong(st.nextToken());
+            v = Long.parseLong(st.nextToken());
+
+            board[i-1][0] = d;
+            board[i-1][1] = v;
+
+            total += (board[i-1][1]);
         }
 
-        Arrays.sort(node); //입력값이 순서대로 들어온다는 보장 X
+        Arrays.sort(board,(x,y) -> Long.compare(x[0], y[0]));
 
-        long sum = 0;
+        long result = 0;
+        long tmpResult = 0;
 
-        for(Node n : node) {//하나씩 인구 수 계산하여 중간 값과 가장 근접한 마을 찾아서 출력하기
-            sum += n.A;
-            if(sum >=(result+1)/2) {
-                System.out.println(String.valueOf(n.X));
+        for(int i = 0 ; i < n ; i++) {
+            tmpResult += (board[i][1]);
+
+            if(tmpResult >= (total + 1 ) / 2) {
+                result = board[i][0];
                 break;
             }
         }
 
+        System.out.println(result);
 
-    }
-
-    static class Node implements Comparable<Node>{
-        long X;
-        long A;
-        public Node(long x, long a) {
-            super();
-            X = x;
-            A = a;
-        }
-
-
-        @Override
-        public int compareTo(Node o) {
-            if(this.X == o.X) {
-                //서로 거리가 같으면
-                return (int) (this.A-o.A);
-            }
-            return (int) (this.X-o.X);
-        }
+        br.close();
     }
 }
