@@ -1,49 +1,62 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    static int n = 0;
-    static int[] board = new int[201];
-    static int[] dp = new int[201];
 
-    static int longest = 0;
-    public static void main(String[] args) throws IOException {
+    static int n;
+    static int[] arr;
+    static int[] dp;
+
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-        n = Integer.parseInt(st.nextToken());
+        n = Integer.parseInt(br.readLine());
+        arr = new int[n];
+        dp = new int[n];
 
-        for(int i=1;i<=n;i++)
-        {
-            board[i] = Integer.parseInt(br.readLine());
+        for(int i = 0 ; i < n ; i++) {
+            arr[i] = Integer.parseInt(br.readLine());
         }
 
-        dp[1] = 1;
+        dp[0] = arr[0];
+        int i = 1;
+        int j = 0;
 
-        for(int i=2;i<=n;i++)
-        {
-            int result = -1;
-            for(int j=i-1;j>=1;j--)
-            {
-                if(board[j] < board[i])
-                {
-                    if(result<dp[j]+1)
-                    {
-                        longest = Math.max(longest,dp[j]+1);
-                        result = dp[j]+1;
-                    }
-                }
+        while(i < n) {
+            if(arr[i] > dp[j]) {
+                dp[++j] = arr[i];
+            }else {
+                int idx = bs(0,j,arr[i]);
+                dp[idx] = arr[i];
             }
 
-            if(result==-1)
-                dp[i] = 1;
-
-            else
-                dp[i] = result;
+            i++;
         }
-        
-        System.out.println(n - longest);
 
+        System.out.println(n - (j + 1));
 
         br.close();
+    }
+
+    static void print() {
+        for(int i = 0 ; i < n ; i++) {
+            System.out.print(dp[i]+" ");
+        }
+        System.out.println();
+    }
+
+    static int bs(int l,int r,int target) {
+        int mid = 0;
+
+        while(l <= r) {
+            mid = (l+r)/2;
+
+            if(dp[mid] > target) {
+                r = mid - 1;
+            }else {
+                l = mid + 1;
+            }
+        }
+
+        return l;
     }
 }
