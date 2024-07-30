@@ -23,7 +23,6 @@ public class Main {
         int l = 1;
         int r = 1;
 
-        long result = 0;
         long tmpV = 0;
 
         long[] dp = new long[n+2];
@@ -32,9 +31,11 @@ public class Main {
             tmpV += arr[r];
 
             if(m <= tmpV) {
-                dp[r] = Math.max(dp[r],dp[l - 1] + (tmpV - m));
-                tmpV -= arr[l];
-                l++;
+                while(m <= tmpV) {
+                    dp[r] = Math.max(dp[r], dp[l - 1] + (tmpV - m));
+                    tmpV -= arr[l];
+                    l++;
+                }
             }
 
             dp[r] = Math.max(dp[r],dp[r-1]);
@@ -47,7 +48,7 @@ public class Main {
     }
 
     static void print(long[] dp) {
-        for(int i=1;i<=n;i++){
+        for(int i=1;i<=n + 1;i++){
             System.out.print(dp[i]+" ");
         }
         System.out.println();
