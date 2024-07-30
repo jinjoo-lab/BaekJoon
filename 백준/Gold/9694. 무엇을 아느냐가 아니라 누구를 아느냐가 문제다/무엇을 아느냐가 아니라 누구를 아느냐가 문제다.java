@@ -8,18 +8,16 @@ public class Main {
     static ArrayList<Node>[] graph;
 
     public static void main(String[] args) throws Exception {
-        //BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        //StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
         StringBuilder sb = new StringBuilder();
 
-        Scanner sc = new Scanner(System.in);
-
-        tt = sc.nextInt();
+        tt = Integer.parseInt(st.nextToken());
 
         for(int t = 1 ; t <= tt ; t++) {
-            //st = new StringTokenizer(br.readLine()," ");
-            n = sc.nextInt();
-            m = sc.nextInt();
+            st = new StringTokenizer(br.readLine());
+            n = Integer.parseInt(st.nextToken());
+            m = Integer.parseInt(st.nextToken());
 
             graph = new ArrayList[m];
 
@@ -28,11 +26,11 @@ public class Main {
             }
 
             for(int i = 1 ; i <= n ; i++) {
-                //st = new StringTokenizer(br.readLine()," ");
+                st = new StringTokenizer(br.readLine());
 
-                int v1 = sc.nextInt();
-                int v2 = sc.nextInt();
-                int c = sc.nextInt();
+                int v1 = Integer.parseInt(st.nextToken());
+                int v2 = Integer.parseInt(st.nextToken());
+                int c = Integer.parseInt(st.nextToken());
 
                 graph[v1].add(new Node(v2,c));
                 graph[v2].add(new Node(v1,c));
@@ -44,7 +42,7 @@ public class Main {
 
         System.out.print(sb);
 
-        //br.close();
+        br.close();
     }
 
     static String go() {
