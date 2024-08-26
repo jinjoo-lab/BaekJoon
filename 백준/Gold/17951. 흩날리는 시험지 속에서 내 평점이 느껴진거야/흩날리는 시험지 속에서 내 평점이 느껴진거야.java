@@ -3,65 +3,61 @@ import java.io.*;
 
 public class Main {
 
-    static int result = -1;
-    static int n,k;
+    static int n,m;
+    static int[] score;
 
-    static int[] board;
-
-    static int sum;
+    static int max = 0;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine()," ") ;
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
 
         n = Integer.parseInt(st.nextToken());
-        k = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
 
-        board = new int[n+1];
-        st = new StringTokenizer(br.readLine()," ") ;
-        for(int i = 1 ; i <= n ; i++) {
-            board[i] = Integer.parseInt(st.nextToken());
+        score = new int[n];
+        st = new StringTokenizer(br.readLine()," ");
 
-            sum += board[i];
+        for(int i = 0 ; i < n ; i++) {
+            score[i] = Integer.parseInt(st.nextToken());
+
+            max += score[i];
         }
 
         int l = 0;
-        int r = sum;
+        int r = max;
         int mid = 0;
 
         while(l <= r) {
-            mid = (l+r) / 2;
+            mid = (l + r) / 2;
 
-            if(go(mid)) {
+            int tmpC = go(mid);
+
+            if(tmpC >= m) {
                 l = mid + 1;
-            }else{
+            }else {
                 r = mid - 1;
             }
         }
 
-        result = r;
+        System.out.println(r);
 
-        System.out.println(result);
         br.close();
     }
 
-    static boolean go(int target) {
-        int tmpSum = 0;
-        int count = 0;
+    static int go(int target) {
+        int cur = 0;
+        int gCount = 0;
 
-        for(int i = 1 ; i <= n ; i++) {
-            tmpSum += board[i];
+        for(int i = 0 ; i < n ; i++) {
+            cur += score[i];
 
-            if(tmpSum  >= target) {
-                count+=1;
-                tmpSum = 0;
+            if(cur >= target) {
+                gCount++;
+                cur = 0;
             }
         }
-
-        if(count >= k){
-            return true;
-        }
-        return false;
+        
+        return gCount;
     }
-
 }
