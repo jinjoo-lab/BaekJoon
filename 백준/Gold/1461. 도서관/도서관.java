@@ -2,67 +2,74 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-    static int n = 0;
-    static int m = 0;
 
-    public static void main(String[] args) throws IOException {
+    static int n,m;
+    static PriorityQueue<Integer> plus;
+    static PriorityQueue<Integer> minus;
+
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine()," ");
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
 
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
 
-        st = new StringTokenizer(br.readLine()," ");
-
-        ArrayList<Integer> plus = new ArrayList<>();
-        ArrayList<Integer> minus = new ArrayList<>();
+        plus = new PriorityQueue<>(
+                (x,y) -> y - x
+        );
+        minus = new PriorityQueue<>(
+                (x,y) -> y - x
+        );
 
         int max = 0;
-        for(int i=0;i<n;i++){
-            int cur = Integer.parseInt(st.nextToken());
 
-            if(cur > 0)
-                plus.add(cur);
+        st = new StringTokenizer(br.readLine(), " ");
+        for(int i = 0 ; i < n ; i++) {
+            int tmp = Integer.parseInt(st.nextToken());
 
-            else
-                minus.add(cur*-1);
-
-            max = Math.max(Math.abs(cur),max);
+            if (tmp >= 0) {
+                plus.add(tmp);
+                max = Math.max(max, tmp);
+            } else {
+                minus.add(tmp * -1);
+                max = Math.max(max, tmp * -1);
+            }
         }
-
-        Collections.sort(plus,(x,y) -> y - x);
-        Collections.sort(minus,(x,y) -> y - x);
 
         int result = 0;
-        int i = 0;
+        while(!plus.isEmpty()) {
+            int next = plus.peek();
 
-        if(!plus.isEmpty()){
-        while(true){
+            result += (2*next);
 
-            result += plus.get(i) * 2;
-            i += m;
+            int idx = 0;
+            while(!plus.isEmpty()) {
+                plus.poll();
+                idx++;
 
-            if(i >= plus.size()) {
-                break;
-            }
-        }
-        }
-
-        i = 0;
-        if(!minus.isEmpty()) {
-            while (true) {
-
-                result += minus.get(i) * 2;
-                i += m;
-
-                if (i >= minus.size()) {
+                if(idx == m)
                     break;
-                }
             }
         }
 
-        System.out.println(result - max);
+        while(!minus.isEmpty()) {
+            int next = minus.peek();
 
+            result += (2*next);
+
+            int idx = 0;
+            while(!minus.isEmpty()) {
+                minus.poll();
+                idx++;
+
+                if(idx == m)
+                    break;
+            }
+        }
+
+        result -= max;
+
+        System.out.println(result);
 
         br.close();
     }
