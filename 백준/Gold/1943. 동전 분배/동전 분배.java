@@ -43,7 +43,7 @@ public class Main {
                 for (int k = sum / 2; k >= 0; k--) {
                     if(dp[k]) {
                         for (int j = 1; j <= count; j++) {
-                            if(k + (money * j) <= 500_00) {
+                            if(k + (money * j) <= sum/2) {
                                 dp[k + (money * j)] = true;
                             }else {
                                 break;
