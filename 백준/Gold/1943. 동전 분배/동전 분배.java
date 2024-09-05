@@ -40,11 +40,13 @@ public class Main {
                 int money = coin[i];
                 int count = num[i];
 
-                for (int k = sum / 2; k >= money; k--) {
-                    if(dp[k - money]) {
-                        for (int j = 0; j < count; j++) {
+                for (int k = sum / 2; k >= 0; k--) {
+                    if(dp[k]) {
+                        for (int j = 1; j <= count; j++) {
                             if(k + (money * j) <= 500_00) {
-                                dp[k + (money * j)] = dp[k + (money * j)] || dp[k + (money * j) - money];
+                                dp[k + (money * j)] = true;
+                            }else {
+                                break;
                             }
                         }
                     }
