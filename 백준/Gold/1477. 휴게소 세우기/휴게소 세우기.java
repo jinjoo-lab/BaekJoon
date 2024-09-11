@@ -1,82 +1,74 @@
 import java.util.*;
 import java.io.*;
+
 public class Main {
 
-    static int n = 0;
-    static int m = 0;
-    static int l = 0;
-
-    static int result;
-
+    static int n,m,l;
+    static int[] curP;
+    static int max;
 
     public static void main(String[] args) throws Exception {
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(bf.readLine(), " ");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
 
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
         l = Integer.parseInt(st.nextToken());
 
-        int[] arr = new int[n + 2];
-        arr[0] = 0;
-        arr[1] = l;
+        curP = new int[n + 2];
 
-        st = new StringTokenizer(bf.readLine(), " ");
-        for(int i=2;i<n+2;i++){
-            arr[i] = Integer.parseInt(st.nextToken());
+        if(n != 0) {
+            st = new StringTokenizer(br.readLine(), " ");
+            for (int i = 1; i <= n; i++) {
+                curP[i] = Integer.parseInt(st.nextToken());
+            }
         }
 
-        Arrays.sort(arr);
+        curP[n + 1] = l;
 
-        int[] minus = new int[n+1];
-        for(int i=0;i<n+1;i++){
-            minus[i] = arr[i+1] - arr[i] ;
-        }
+        Arrays.sort(curP);
 
-        Arrays.sort(minus);
+        bs();
 
-        result = l;
-
-        find(1,l,minus);
-        System.out.println(result);
-
-        bf.close();
+        br.close();
     }
 
-    static void find(int l,int r,int[] minus){
+    static void bs() {
+        int left = 1;
+        int right = l;
+        int result = l;
 
-        int mid = 0;
+        while(left <= right) {
+            int mid = (left + right) / 2;
+
+            if(go(mid)) {
+                result = mid;
+                right = mid - 1;
+            }else {
+                left = mid + 1;
+            }
+        }
+
+        System.out.println(result);
+    }
+
+    static boolean go(int target) {
         int count = 0;
 
-        while(l <= r){
-            mid = (l + r) / 2;
-            count = 0;
+        for(int i = 1 ; i <= n + 1 ; i++) {
+            int nextD = curP[i] - curP[i -1];
 
-            for(int i=0;i<n+1;i++){
-                if(mid >= minus[i])
-                    continue;
-
-                else{
-                    int value = minus[i] / mid;
-                    int rest = minus[i] % mid;
-
-                    if(rest == 0){
-                        count += value -1;
-                    }else{
-                        count += value;
-                    }
-                }
-            }
-
-            if(count <= m){
-                result = Math.min(result,mid);
-                r = mid - 1;
-            }else{
-                l = mid + 1;
-            }
-
+            count += nextD / target + (nextD % target == 0 ? -1 : 0);
         }
+
+        return count <= m;
+    }
+
+
+    static void print(List<Integer> dis) {
+        for(int next : dis) {
+            System.out.print(next+" ");
+        }
+        System.out.println();
     }
 }
-
-
