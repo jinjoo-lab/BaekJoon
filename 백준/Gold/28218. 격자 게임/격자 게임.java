@@ -38,16 +38,17 @@ public class Main {
                     continue;
                 }
 
-                if(i - 1 >= 1)
-                    dp[i - 1][j] |= reverse(i,j);
+                if(i - 1 >= 1 && board[i-1][j] != -1)
+                    dp[i - 1][j] = 1;
 
-                if(j - 1 >= 1)
-                    dp[i][j - 1] |= reverse(i,j);
+                if(j - 1 >= 1 && board[i][j-1] != -1)
+                    dp[i][j - 1] = 1;
 
 
                 for(int a = 1; a <=k ; a++) {
-                    if(i - a >= 1 && j - a >= 1 && board[i - a][j - a] != -1 ){
-                        dp[i - a][j - a] |= reverse(i,j);
+                    if(i - a >= 1 && j - a >= 1 ){
+                        if(board[i-a][j-a] != -1)
+                            dp[i - a][j - a] = 1;
                     }else
                         break;
                 }
