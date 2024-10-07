@@ -2,47 +2,56 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-    static int n = 0;
 
-    public static void main(String[] args) throws IOException {
+    static boolean[] v = new boolean[10001];
+
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine()," ");
 
-        n = Integer.parseInt(br.readLine());
-        int[][] board = new int[n][2];
+        int n = Integer.parseInt(st.nextToken());
 
-        for(int i=1;i<=n;i++){
-            StringTokenizer st = new StringTokenizer(br.readLine()," ");
-            board[i-1][0] = Integer.parseInt(st.nextToken());
-            board[i-1][1] = Integer.parseInt(st.nextToken());
+        Node[] arr = new Node[n];
+        for(int i = 0; i < n; i++) {
+            st = new StringTokenizer(br.readLine()," ");
+            arr[i] = new Node(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
         }
 
-        Arrays.sort(board,(x,y) -> {
-            if(x[0] == y[0])
-                return x[1] - y[1];
+        Arrays.sort(arr,(x,y) -> {
+            if(y.p == x.p)
+                return x.d - y.d;
 
-            return y[0] - x[0];
+            return y.p - x.p;
         });
 
-
-
-
         int result = 0;
-        boolean[] visit = new boolean[10001];
 
-        for(int i=0;i<n;i++){
-            int tmp = board[i][1];
 
-            for(int j= tmp;j>=1;j--){
-                if(!visit[j]){
-                    visit[j] = true;
-                    result += board[i][0];
+        for(int i = 0; i < n; i++) {
+            int curD = arr[i].d;
+            int curP = arr[i].p;
+
+            for(int j = curD ; j >= 1 ; j--) {
+                if(!v[j]) {
+                    v[j] = true;
+                    result += curP;
                     break;
                 }
             }
         }
 
+
         System.out.println(result);
         br.close();
     }
 
+    static class Node {
+        int p;
+        int d;
+
+        Node(int p ,int d) {
+            this.p = p;
+            this.d = d;
+        }
+    }
 }
