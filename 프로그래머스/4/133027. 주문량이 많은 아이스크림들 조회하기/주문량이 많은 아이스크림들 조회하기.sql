@@ -1,0 +1,21 @@
+-- 코드를 입력하세요
+SELECT C.FLAVOR FROM (
+    SELECT
+        A.FLAVOR AS FLAVOR,
+        SUM(A.TOTAL_ORDER + B.TOTAL_ORDER) AS TOTAL
+    FROM (
+        (SELECT 
+            FH.FLAVOR AS FLAVOR,
+            SUM(FH.TOTAL_ORDER) AS TOTAL_ORDER
+            FROM FIRST_HALF FH
+            GROUP BY FH.FLAVOR) A
+        JOIN 
+        (
+            SELECT 
+            J.FLAVOR AS FLAVOR,
+            SUM(J.TOTAL_ORDER) AS TOTAL_ORDER
+            FROM JULY J
+            GROUP BY J.FLAVOR) B
+    ON A.FLAVOR = B.FLAVOR )
+    GROUP BY A.FLAVOR
+) C ORDER BY C.TOTAL DESC LIMIT 3;
