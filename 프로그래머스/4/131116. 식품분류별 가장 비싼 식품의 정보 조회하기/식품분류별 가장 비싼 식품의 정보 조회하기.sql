@@ -1,12 +1,9 @@
 -- 코드를 입력하세요
-#SELECT * FROM FOOD_PRODUCT;
 
-SELECT FP.CATEGORY, FP.PRICE AS MAX_PRICE, FP.PRODUCT_NAME
-FROM FOOD_PRODUCT FP
-JOIN (
-    SELECT CATEGORY, MAX(PRICE) AS MAX_PRICE 
+select A.category, A.price as max_price, A.product_name
+from (
+    select *, RANK() OVER(PARTITION BY CATEGORY ORDER BY PRICE DESC) RNK
     FROM FOOD_PRODUCT
-    GROUP BY CATEGORY) FPR 
-ON FP.CATEGORY = FPR.CATEGORY
-WHERE FP.PRICE = FPR.MAX_PRICE AND FP.CATEGORY IN ('과자','국','김치','식용유')
-ORDER BY MAX_PRICE DESC;
+) A
+where A.RNK = 1 AND A.category in ('과자','국','김치','식용유')
+order by max_price desc;
