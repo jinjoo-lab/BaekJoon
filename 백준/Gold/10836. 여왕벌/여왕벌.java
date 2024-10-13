@@ -39,25 +39,22 @@ public class Main {
             int t = Integer.parseInt(st.nextToken());
 
             for (int j = 1; j <= z; j++) {
-                plus[idx] = 0;
+                plus[idx] += 0;
                 idx = idx + 1;
             }
 
             for (int j = 1; j <= o; j++) {
-                plus[idx] = 1;
+                plus[idx] += 1;
                 idx = idx + 1;
             }
 
             for (int j = 1; j <= t; j++) {
-                plus[idx] = 2;
+                plus[idx] += 2;
                 idx = idx + 1;
             }
-
-
-
-            inIt(plus);
-            plus(plus);
         }
+        inIt(plus);
+        plus(plus);
 
         StringBuilder sb = new StringBuilder();
         for(int i=1;i<=n;i++)
@@ -97,8 +94,8 @@ public class Main {
     {
         int[] second = new int[n];
 
-        second[1] = Math.max(plus[n-1], Math.max(plus[n], plus[n+1]));
-        all[1] += second[1];
+         second[1] = Math.max(plus[n-1], Math.max(plus[n], plus[n+1]));
+         all[1] += second[1];
 
         for(int i=2;i<n;i++)
         {
