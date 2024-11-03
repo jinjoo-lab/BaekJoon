@@ -3,70 +3,62 @@ import java.io.*;
 
 public class Main {
 
-    static int n;
-    static long m;
-    static int[] arr;
-
-    static PriorityQueue<Long> pq = new PriorityQueue<>(
-            (x,y) -> Long.compare(x,y)
-    );
+    static int n,k;
+    static int[] board;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine()," ");
 
         n = Integer.parseInt(st.nextToken());
-        m = Long.parseLong(st.nextToken());
+        k = Integer.parseInt(st.nextToken());
 
-        arr = new int[n+1];
         st = new StringTokenizer(br.readLine()," ");
-
+        board = new int[n+1];
         for(int i = 1 ; i <= n ; i++) {
-            arr[i] = Integer.parseInt(st.nextToken());
+            board[i] = Integer.parseInt(st.nextToken());
         }
-
-        int l = 1;
-        int r = n;
-        int mid = 0;
 
         int result = n;
+        int min = 1;
+        int max = n;
+        int mid = 0;
 
-        while(l <= r) {
-            mid = (l + r) / 2;
+        while(min <= max) {
+            mid = (min + max) / 2;
 
             if(go(mid)) {
-                result = Math.min(result , mid);
-                r = mid - 1;
+                result = mid;
+                max = mid - 1;
             }else {
-                l = mid + 1;
+                min = mid + 1;
             }
         }
+
 
         System.out.println(result);
         br.close();
     }
 
-    static boolean go(int num) {
-        pq.clear();
+    static boolean go(int target) {
+        PriorityQueue<Long> pq = new PriorityQueue<>(
+                (x,y) -> Long.compare(x,y)
+        );
 
-        for(int i = 1 ; i <= num ; i++) {
+        for(int i = 1 ; i <= target ; i++) {
             pq.add(0l);
         }
 
         for(int i = 1 ; i <= n ; i++) {
-            if(!pq.isEmpty()) {
-                long tmp = pq.poll();
-                tmp += arr[i];
-                pq.add(tmp);
-            }
+            long tmp = pq.poll();
+            tmp += board[i];
+
+            if(tmp > k)
+                return false;
+
+            pq.add(tmp);
         }
 
-        long result = 0;
-
-        while(!pq.isEmpty()) {
-            result = pq.poll();
-        }
-
-        return result <= m;
+        return true;
     }
 }
